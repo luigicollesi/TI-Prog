@@ -1,3 +1,8 @@
+import java.util.Objects;
+
+/**
+ * Representa uma carta de baralho para o jogo de Blackjack.
+ */
 public class Card {
     public enum Suit { HEARTS, DIAMONDS, CLUBS, SPADES }
     public enum Rank {
@@ -18,11 +23,29 @@ public class Card {
         this.rank = rank;
     }
 
-    public Rank getRank() { return rank; }
-    public Suit getSuit() { return suit; }
+    public Suit getSuit() {
+        return suit;
+    }
+
+    public Rank getRank() {
+        return rank;
+    }
 
     @Override
     public String toString() {
         return rank + " of " + suit;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Card)) return false;
+        Card other = (Card) o;
+        return suit == other.suit && rank == other.rank;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(suit, rank);
     }
 }
