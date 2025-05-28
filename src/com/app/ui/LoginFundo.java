@@ -129,13 +129,13 @@ public class LoginFundo extends JFrame implements ActionListener {
         );
         try {
             if (rs != null && rs.next()) {
-                JOptionPane.showMessageDialog(this, "Login bem-sucedido!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                CustomDialog.showMessage(this, "Login bem-sucedido!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 rs.getStatement().getConnection().close();
                 // Abre MenuFrame e fecha Login
                 new MenuFrame();
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Credenciais inválidas.", "Erro", JOptionPane.ERROR_MESSAGE);
+                CustomDialog.showMessage(this, "Credenciais inválidas.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -213,19 +213,19 @@ public class LoginFundo extends JFrame implements ActionListener {
             String cp = new String(confirmPass.getPassword());
 
             if (u.isEmpty() || u.length() > 15) {
-                JOptionPane.showMessageDialog(dialog,
+                CustomDialog.showMessage(dialog,
                     "Nome de usuário deve ter de 1 a 15 caracteres.",
                     "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             if (p.length() < 4 || p.length() > 50) {
-                JOptionPane.showMessageDialog(dialog,
+                CustomDialog.showMessage(dialog,
                     "Senha deve ter entre 4 e 50 caracteres.",
                     "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             if (!p.equals(cp)) {
-                JOptionPane.showMessageDialog(dialog,
+                CustomDialog.showMessage(dialog,
                     "Senha e confirmação não conferem.",
                     "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -236,7 +236,7 @@ public class LoginFundo extends JFrame implements ActionListener {
             );
             try {
                 if (check != null && check.next()) {
-                    JOptionPane.showMessageDialog(dialog,
+                    CustomDialog.showMessage(dialog,
                         "Nome de usuário já existe.",
                         "Erro", JOptionPane.ERROR_MESSAGE);
                     check.getStatement().getConnection().close();
@@ -251,7 +251,7 @@ public class LoginFundo extends JFrame implements ActionListener {
                 "INSERT INTO usuarios (user_name, senha) VALUES (?, ?)",
                 new String[]{u, p}
             );
-            JOptionPane.showMessageDialog(dialog,
+            CustomDialog.showMessage(dialog,
                 "Conta criada com sucesso!",
                 "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             dialog.dispose();
