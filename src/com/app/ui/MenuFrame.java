@@ -3,10 +3,10 @@ package com.app.ui;
 import javax.swing.*;
 import java.awt.*;
 
-
 public class MenuFrame extends JFrame {
     private JButton btnJogar;
     private JButton btnHistorico;
+    private JButton btnSair;
     private Image backgroundImage;
 
     public MenuFrame() {
@@ -15,39 +15,40 @@ public class MenuFrame extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        // Carrega imagem de fundo
-        backgroundImage = new ImageIcon("public/Images/Fundo.png").getImage(); // ajuste o caminho conforme seu projeto
+        backgroundImage = new ImageIcon("public/Images/Fundo.png").getImage();
 
-        // Painel com fundo customizado
         JPanel backgroundPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                g2d.setColor(new Color(0, 0, 0, 150));
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
             }
         };
         backgroundPanel.setLayout(null);
 
-        // Botão Jogar
-        btnJogar = new JButton("Jogar");
-        btnJogar.setFont(new Font("Arial", Font.BOLD, 36));
+        btnJogar = RoundedInput.createButtom("Jogar");
         btnJogar.setBounds(350, 250, 300, 80);
         btnJogar.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Iniciando o jogo...", "Jogar", JOptionPane.INFORMATION_MESSAGE);
-            // Aqui você pode chamar sua lógica de jogo
         });
 
-        // Botão Histórico
-        btnHistorico = new JButton("Ver Histórico");
-        btnHistorico.setFont(new Font("Arial", Font.BOLD, 36));
+        btnHistorico = RoundedInput.createButtom("Ver Histórico");
         btnHistorico.setBounds(350, 370, 300, 80);
         btnHistorico.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Exibindo histórico de partidas...", "Histórico", JOptionPane.INFORMATION_MESSAGE);
-            // Aqui você pode chamar a lógica de histórico
         });
+
+        btnSair = RoundedInput.createButtom("Sair");
+        btnSair.setBounds(800, 580, 150, 60); // canto inferior direito
+        btnSair.addActionListener(e -> System.exit(0));
 
         backgroundPanel.add(btnJogar);
         backgroundPanel.add(btnHistorico);
+        backgroundPanel.add(btnSair);
 
         setContentPane(backgroundPanel);
         setVisible(true);
