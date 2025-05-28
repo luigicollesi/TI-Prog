@@ -92,7 +92,6 @@ public class LoginFrame extends JFrame implements ActionListener {
             if (rs != null && rs.next()) {
                 JOptionPane.showMessageDialog(this, "Login bem-sucedido!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 rs.getStatement().getConnection().close();
-                // TODO: próxima tela
             } else {
                 JOptionPane.showMessageDialog(this, "Credenciais inválidas.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
