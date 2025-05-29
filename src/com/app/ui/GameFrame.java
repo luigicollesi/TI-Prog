@@ -1,5 +1,7 @@
 package com.app.ui;
 
+import com.app.game.Game;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,11 +14,13 @@ public class GameFrame extends JFrame {
     private JPanel painelCartasMesa;
     private JPanel painelBotoes;
     private JButton btnSair;
+    private JLabel lblValorCartasJogador;
 
     private int saldo = 500;
     private int apostaAtual = 0;
 
-    private Image backgroundImage = new ImageIcon("public/Images/GameFundo.png").getImage();;
+    private Image backgroundImage = new ImageIcon("public/Images/GameFundo.png").getImage();
+    private Game match;
 
     public GameFrame() {
         setSize(1000, 700);
@@ -72,7 +76,21 @@ public class GameFrame extends JFrame {
         painelBotoes.setOpaque(false);
         painelBotoes.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        comecarApostas();        
+        lblValorCartasJogador = new JLabel("", SwingConstants.CENTER);
+        lblValorCartasJogador.setFont(new Font("Arial", Font.BOLD, 24));
+        lblValorCartasJogador.setForeground(Color.WHITE);
+        lblValorCartasJogador.setBounds(0, 300, getWidth(), 40);
+
+        comecarApostas();
+        
+        backgroundPanel.add(lblSaldo);
+        backgroundPanel.add(btnSair);
+        backgroundPanel.add(lblAposta);
+        backgroundPanel.add(painelCartasMesa);
+        backgroundPanel.add(painelCartasJogador);
+        backgroundPanel.add(painelBotoes);
+        backgroundPanel.add(lblValorCartasJogador);
+        setContentPane(backgroundPanel);
 
         setVisible(true);
     }
@@ -97,11 +115,11 @@ public class GameFrame extends JFrame {
 
         painelBotoes.setVisible(true);
         painelBotoes.revalidate();
-        adicionarComponentes();
+        painelBotoes.repaint();
     }
 
     private void botoesGame(){
-         painelBotoes.removeAll();
+        painelBotoes.removeAll();
         JButton btnComprar = RoundedInput.createButtom("Comprar");
         btnComprar.setFont(new Font("Arial", Font.BOLD, 22));
         btnComprar.setPreferredSize(new Dimension(200, 45));
@@ -121,16 +139,17 @@ public class GameFrame extends JFrame {
         painelBotoes.add(btnDesistir);
 
         painelBotoes.setVisible(true);
-        painelBotoes.revalidate(); 
-        adicionarComponentes();
+        painelBotoes.revalidate();
+        painelBotoes.repaint();
     }
 
     private void comprarCarta(ActionEvent e){
-        CustomDialog.showMessage(this, "Comprando Carta...", "Comprar", JOptionPane.INFORMATION_MESSAGE);
+        this.match.comprar();
     }
 
     private void manterCartas(ActionEvent e){
-        CustomDialog.showMessage(this, "Manter Cartas", "Manter", JOptionPane.INFORMATION_MESSAGE);
+        painelCartasMesa.removeAll();
+        this.match.manter();
     }
 
     private void desistirCartas(ActionEvent e){
@@ -155,7 +174,7 @@ public class GameFrame extends JFrame {
 
     private void iniciarFaseDeJogo() {
         setTitle("Blackjack - Fase de Jogo");
-        botoesGame();
+        this.match = new Game(this);
     }
 
     private void atualizarLabels() {
@@ -163,13 +182,43 @@ public class GameFrame extends JFrame {
         lblAposta.setText("Apostando: $" + apostaAtual);
     }
 
-    private void adicionarComponentes(){
-        backgroundPanel.add(lblSaldo);
-        backgroundPanel.add(btnSair);
-        backgroundPanel.add(lblAposta);
-        backgroundPanel.add(painelCartasMesa);
-        backgroundPanel.add(painelCartasJogador);
-        backgroundPanel.add(painelBotoes);
-        setContentPane(backgroundPanel);
+    public void cartasBot(String[] carta, boolean show) {
+        String path;
+        if (show) {
+            // ["K", "Copas"] → public/Cartas/Copas/K.png
+            path = "public/Cartas/" + carta[1] + "/" + carta[0] + ".png";
+        } else {
+            path = "public/Cartas/Fundo.png";
+        }
+
+        ImageIcon icon = new ImageIcon(path);
+        Image img = icon.getImage().getScaledInstance(100, 145, Image.SCALE_SMOOTH);
+        JLabel label = new JLabel(new ImageIcon(img));
+        label.setPreferredSize(new Dimension(100, 145));
+
+        painelCartasMesa.add(label);
+        painelCartasMesa.revalidate();
+        painelCartasMesa.repaint();
     }
+
+    public void cartasPlayer(String[] carta, int saldo) {
+        String path = "public/Cartas/" + carta[1] + "/" + carta[0] + ".png";
+
+        ImageIcon icon = new ImageIcon(path);
+        Image img = icon.getImage().getScaledInstance(100, 145, Image.SCALE_SMOOTH);
+        JLabel label = new JLabel(new ImageIcon(img));
+        label.setPreferredSize(new Dimension(100, 145));
+
+        painelCartasJogador.add(label);
+        painelCartasJogador.revalidate();
+        painelCartasJogador.repaint();
+
+        // Atualiza o valor total das cartas do jogador
+        lblValorCartasJogador.setText(String.valueOf(saldo));
+    }
+
+    public void game() {
+        botoesGame();
+    }
+
 }
