@@ -34,6 +34,9 @@ public class MenuFrame extends JFrame {
         btnJogar.setBounds(350, 250, 300, 80);
         btnJogar.addActionListener(e -> {
             CustomDialog.showMessage(this, "Iniciando o jogo...", "Jogar", JOptionPane.INFORMATION_MESSAGE);
+
+            new GameFrame();
+            dispose();
         });
 
         btnHistorico = RoundedInput.createButtom("Ver Histórico");
