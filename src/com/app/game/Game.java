@@ -18,7 +18,7 @@ public class Game {
         this.bot = new Bot();
 
         inicializarBaralho();
-        jogar();
+        executarSequencia();
     }
 
     private void inicializarBaralho() {
@@ -38,40 +38,59 @@ public class Game {
         Collections.shuffle(baralho);
     }
 
-    private void jogar() {
-        // === Bot recebe cartas ===
-        String[] carta1 = baralho.remove(0);
-        cartasBot.add(carta1);
-        frame.cartasBot(carta1, true);
-        esperar(1000);
+    private void executarSequencia() {
+        SwingWorker<Void, Runnable> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                // Bot recebe primeira carta visível
+                String[] carta1 = baralho.remove(0);
+                cartasBot.add(carta1);
+                publish(() -> frame.cartasBot(carta1, true));
+                Thread.sleep(1000);
 
-        String[] carta2 = baralho.remove(0);
-        cartasBot.add(carta2);
-        frame.cartasBot(carta2, false);
-        esperar(1000);
+                // Bot recebe segunda carta virada
+                String[] carta2 = baralho.remove(0);
+                cartasBot.add(carta2);
+                publish(() -> frame.cartasBot(carta2, false));
+                Thread.sleep(1000);
 
-        int resposta = bot.game(carta1, carta2);
-        while (resposta == 0) {
-            String[] nova = baralho.remove(0);
-            cartasBot.add(nova);
-            frame.cartasBot(nova, false);
-            esperar(1000);
-            resposta = bot.add(nova);
-        }
+                int resposta = bot.game(carta1, carta2);
+                while (resposta == 0) {
+                    String[] nova = baralho.remove(0);
+                    cartasBot.add(nova);
+                    String[] finalNova = nova;
+                    publish(() -> frame.cartasBot(finalNova, false));
+                    Thread.sleep(1000);
+                    resposta = bot.add(nova);
+                }
 
-        // === Jogador recebe cartas ===
-        String[] j1 = baralho.remove(0);
-        cartasJogador.add(j1);
-        frame.cartasPlayer(j1, somar(cartasJogador));
-        esperar(1000);
+                // Jogador recebe carta 1
+                String[] j1 = baralho.remove(0);
+                cartasJogador.add(j1);
+                int parcial1 = somar(cartasJogador);
+                publish(() -> frame.cartasPlayer(j1, parcial1));
+                Thread.sleep(1000);
 
-        String[] j2 = baralho.remove(0);
-        cartasJogador.add(j2);
-        frame.cartasPlayer(j2, somar(cartasJogador));
-        esperar(1000);
+                // Jogador recebe carta 2
+                String[] j2 = baralho.remove(0);
+                cartasJogador.add(j2);
+                int parcial2 = somar(cartasJogador);
+                publish(() -> frame.cartasPlayer(j2, parcial2));
+                Thread.sleep(1000);
 
-        // Ativa botões de jogada
-        frame.game();
+                publish(() -> frame.game());
+                return null;
+            }
+
+            @Override
+            protected void process(List<Runnable> updates) {
+                for (Runnable r : updates) {
+                    r.run(); // Atualiza na EDT
+                }
+            }
+        };
+
+        worker.execute();
     }
 
     public void comprar() {
