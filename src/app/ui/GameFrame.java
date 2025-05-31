@@ -160,12 +160,6 @@ public class GameFrame extends JFrame {
         btnManter.addActionListener(e -> manterCartas());
         painelBotoes.add(btnManter);
 
-        JButton btnDesistir = CustomInput.createButtom("Desistir", Color.BLACK);
-        btnDesistir.setFont(new Font("Arial", Font.BOLD, 22));
-        btnDesistir.setPreferredSize(new Dimension(200, 45));
-        btnDesistir.addActionListener(e -> desistirCartas());
-        painelBotoes.add(btnDesistir);
-
         painelBotoes.setVisible(true);
         painelBotoes.revalidate();
         painelBotoes.repaint();
@@ -178,10 +172,6 @@ public class GameFrame extends JFrame {
     private void manterCartas(){
         painelCartasMesa.removeAll();
         this.match.manter();
-    }
-
-    private void desistirCartas(){
-        CustomDialog.showMessage(this, "Desistindo da Rodada", "Desistindo", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void adicionarAposta(int valor) {
