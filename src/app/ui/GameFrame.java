@@ -1,10 +1,14 @@
-package com.app.ui;
-
-import com.app.game.Game;
+package app.ui;
 
 import javax.swing.*;
+
+import app.db.DatabaseOperations;
+import app.game.Game;
+
 import java.awt.*;
-import java.awt.event.ActionEvent;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class GameFrame extends JFrame {
     private JPanel backgroundPanel;
@@ -16,16 +20,40 @@ public class GameFrame extends JFrame {
     private JButton btnSair;
     private JLabel lblValorCartasJogador;
 
-    private int saldo = 500;
+    private int saldo = 0;
     private int apostaAtual = 0;
 
     private Image backgroundImage = new ImageIcon("public/Images/GameFundo.png").getImage();
     private Game match;
+    private final String userId;
 
-    public GameFrame() {
+    public GameFrame(JFrame f, String userId) {
+        this.userId = userId;
+
+        try {
+            ResultSet rs = DatabaseOperations.executeQuery(
+                "SELECT money FROM usuarios WHERE id = ?",
+                new String[]{userId}
+            );
+
+            if (rs != null && rs.next()) {
+                saldo = rs.getInt("money");
+                rs.getStatement().getConnection().close();
+            } else {
+                CustomDialog.showMessage(this, "Usuário não encontrado no banco de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            CustomDialog.showMessage(this, "Erro ao buscar saldo do banco de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+
         setSize(1000, 700);
-        setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        Point parentLocation = f.getLocation();
+        int x = parentLocation.x + (f.getWidth() - getWidth()) / 2;
+        int y = parentLocation.y + (f.getHeight() - getHeight()) / 2 - 70;
+        setLocation(x, y);
 
         backgroundPanel = new JPanel() {
             @Override
@@ -47,12 +75,12 @@ public class GameFrame extends JFrame {
         lblSaldo.setBounds(30, 10, 400, 40);
 
         // Botão de Sair para o menu
-        btnSair = RoundedInput.createButtom("Sair");
+        btnSair = CustomInput.createButtom("Sair", Color.BLACK);
         btnSair.setFont(new Font("Arial", Font.BOLD, 20));
-        btnSair.setBounds(850, 10, 100, 40);
+        btnSair.setBounds(800, 20, 150, 50);
         btnSair.addActionListener(e -> {
+            new MenuFrame(this, userId); // Volta ao menu
             this.dispose();
-            new MenuFrame(); // Volta ao menu
         });
 
         // Label de aposta (centralizada)
@@ -100,17 +128,17 @@ public class GameFrame extends JFrame {
         painelBotoes.removeAll();
         int[] valores = {5, 10, 25, 50};
         for (int valor : valores) {
-            JButton btn = RoundedInput.createButtom("+" + valor);
+            JButton btn = CustomInput.createButtom("+" + valor, Color.BLACK);
             btn.setFont(new Font("Arial", Font.BOLD, 22));
             btn.setPreferredSize(new Dimension(100, 45));
             btn.addActionListener(e -> adicionarAposta(valor));
             painelBotoes.add(btn);
         }
 
-        JButton btnFinalizar = RoundedInput.createButtom("Finalizar Aposta");
+        JButton btnFinalizar = CustomInput.createButtom("Finalizar Aposta", Color.BLACK);
         btnFinalizar.setFont(new Font("Arial", Font.BOLD, 22));
         btnFinalizar.setPreferredSize(new Dimension(200, 45));
-        btnFinalizar.addActionListener(this::finalizarAposta);
+        btnFinalizar.addActionListener(e -> finalizarAposta());
         painelBotoes.add(btnFinalizar);
 
         painelBotoes.setVisible(true);
@@ -120,22 +148,22 @@ public class GameFrame extends JFrame {
 
     private void botoesGame(){
         painelBotoes.removeAll();
-        JButton btnComprar = RoundedInput.createButtom("Comprar");
+        JButton btnComprar = CustomInput.createButtom("Comprar",Color.BLACK);
         btnComprar.setFont(new Font("Arial", Font.BOLD, 22));
         btnComprar.setPreferredSize(new Dimension(200, 45));
-        btnComprar.addActionListener(this::comprarCarta);
+        btnComprar.addActionListener(e -> comprarCarta());
         painelBotoes.add(btnComprar);
 
-        JButton btnManter = RoundedInput.createButtom("Manter");
+        JButton btnManter = CustomInput.createButtom("Manter", Color.BLACK);
         btnManter.setFont(new Font("Arial", Font.BOLD, 22));
         btnManter.setPreferredSize(new Dimension(200, 45));
-        btnManter.addActionListener(this::manterCartas);
+        btnManter.addActionListener(e -> manterCartas());
         painelBotoes.add(btnManter);
 
-        JButton btnDesistir = RoundedInput.createButtom("Desistir");
+        JButton btnDesistir = CustomInput.createButtom("Desistir", Color.BLACK);
         btnDesistir.setFont(new Font("Arial", Font.BOLD, 22));
         btnDesistir.setPreferredSize(new Dimension(200, 45));
-        btnDesistir.addActionListener(this::desistirCartas);
+        btnDesistir.addActionListener(e -> desistirCartas());
         painelBotoes.add(btnDesistir);
 
         painelBotoes.setVisible(true);
@@ -143,16 +171,16 @@ public class GameFrame extends JFrame {
         painelBotoes.repaint();
     }
 
-    private void comprarCarta(ActionEvent e){
+    private void comprarCarta(){
         this.match.comprar();
     }
 
-    private void manterCartas(ActionEvent e){
+    private void manterCartas(){
         painelCartasMesa.removeAll();
         this.match.manter();
     }
 
-    private void desistirCartas(ActionEvent e){
+    private void desistirCartas(){
         CustomDialog.showMessage(this, "Desistindo da Rodada", "Desistindo", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -166,7 +194,7 @@ public class GameFrame extends JFrame {
         }
     }
 
-    private void finalizarAposta(ActionEvent e) {
+    private void finalizarAposta() {
         painelBotoes.setVisible(false);
         CustomDialog.showMessage(this, "Aposta de $" + apostaAtual + " finalizada!", "Aposta", JOptionPane.INFORMATION_MESSAGE);
         iniciarFaseDeJogo();
@@ -174,7 +202,7 @@ public class GameFrame extends JFrame {
 
     private void iniciarFaseDeJogo() {
         setTitle("Blackjack - Fase de Jogo");
-        this.match = new Game(this);
+        this.match = new Game(this, apostaAtual, saldo, userId);
     }
 
     private void atualizarLabels() {
@@ -219,6 +247,26 @@ public class GameFrame extends JFrame {
 
     public void game() {
         botoesGame();
+    }
+
+    public void restart(int novoSaldo){
+        this.apostaAtual = 0;
+        this.saldo = novoSaldo;
+
+        atualizarLabels();
+
+        painelCartasMesa.removeAll();
+        painelCartasMesa.revalidate();
+        painelCartasMesa.repaint();
+
+        painelCartasJogador.removeAll();
+        painelCartasJogador.revalidate();
+        painelCartasJogador.repaint();
+
+        lblValorCartasJogador.setText("");
+        lblValorCartasJogador.revalidate();
+        lblValorCartasJogador.repaint();
+        comecarApostas();
     }
 
 }

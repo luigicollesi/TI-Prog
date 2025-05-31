@@ -1,10 +1,11 @@
-package com.app.game;
-
-import com.app.ui.CustomDialog;
-import com.app.ui.GameFrame;
+package app.game;
 
 import javax.swing.*;
 import java.util.*;
+
+import app.db.DatabaseOperations;
+import app.ui.CustomDialog;
+import app.ui.GameFrame;
 
 public class Game {
     private final List<String[]> baralho = new ArrayList<>();
@@ -12,10 +13,22 @@ public class Game {
     private final List<String[]> cartasJogador = new ArrayList<>();
     private final Bot bot;
     private final GameFrame frame;
+    private final int valorAposta;
+    private final int saldo;
+    private final String userId;
 
-    public Game(GameFrame frame) {
+    public Game(GameFrame frame, int apostaAtual, int saldo, String userId) {
         this.frame = frame;
         this.bot = new Bot();
+        this.valorAposta = apostaAtual;
+        this.saldo = saldo;
+        this.userId = userId;
+
+        // Atualiza o valor de 'money' no banco
+        DatabaseOperations.executeUpdate(
+            "UPDATE usuarios SET money = ? WHERE id = ?",
+            new String[]{String.valueOf(saldo), userId}
+        );
 
         inicializarBaralho();
         executarSequencia();
@@ -109,19 +122,59 @@ public class Game {
         int totalBot = somar(cartasBot);
         int totalJogador = somar(cartasJogador);
 
-        String resultado = totalJogador > 21 ? "Você estourou!" :
-                           totalBot > 21 ? "Bot estourou! Você venceu!" :
-                           totalJogador > totalBot ? "Você venceu!" :
-                           totalBot > totalJogador ? "Bot venceu!" :
-                           "Empate!";
+        String resultado;
+        int novoSaldo = saldo;
+        int valorGame = valorAposta;
+        boolean venceu = false;
+
+        if (totalJogador > 21) {
+            resultado = "Você estourou!";
+        } else if (totalBot > 21 || totalJogador > totalBot) {
+            venceu = true;
+            boolean vitoriaPor21 = (totalJogador == 21);
+            double multiplicador = vitoriaPor21 ? 2.5 : 2.0;
+            int premio = (int) (valorAposta * multiplicador);
+            novoSaldo += premio;
+            valorGame = premio;
+
+            // Atualiza no banco de dados
+            DatabaseOperations.executeUpdate(
+                "UPDATE usuarios SET money = ? WHERE id = ?",
+                new String[]{String.valueOf(novoSaldo), userId}
+            );
+
+            resultado = vitoriaPor21 ? "Blackjack! Você venceu com 21!" : "Você venceu!";
+        } else if (totalBot > totalJogador) {
+            resultado = "Bot venceu!";
+        } else {
+            resultado = "Empate!";
+            novoSaldo += valorAposta; // Empate: devolve aposta?
+            
+            DatabaseOperations.executeUpdate(
+                "UPDATE usuarios SET money = ? WHERE id = ?",
+                new String[]{String.valueOf(novoSaldo), userId}
+            );
+        }
+
+        String cartasPlayerJSON = converterCartasParaJson(cartasJogador);
+        String cartasBotJSON = converterCartasParaJson(cartasBot);
+
+        DatabaseOperations.executeUpdate(
+            "INSERT INTO historico_partidas (user_id, valor, cartas_player, cartas_bot, venceu) VALUES (?, ?, ?, ?, ?)",
+            new String[]{userId, String.valueOf(valorGame), cartasPlayerJSON, cartasBotJSON, venceu ? "1" : "0"}
+        );
 
         CustomDialog.showMessage(frame,
                 "Você: " + totalJogador + " | Bot: " + totalBot + "\n" + resultado,
                 "Resultado", JOptionPane.INFORMATION_MESSAGE);
+        
+        frame.restart(novoSaldo);
     }
 
-    private int somar(List<String[]> cartas) {
+    public static int somar(List<String[]> cartas) {
         int soma = 0;
+        int ases = 0;
+
         for (String[] carta : cartas) {
             String valor = carta[0];
             switch (valor) {
@@ -131,7 +184,8 @@ public class Game {
                     soma += 10;
                     break;
                 case "A":
-                    soma += 11;
+                    soma += 11; // Assume inicialmente como 11
+                    ases++;
                     break;
                 default:
                     try {
@@ -141,6 +195,13 @@ public class Game {
                     }
             }
         }
+
+        // Corrige os Ases de 11 para 1 se a soma tiver passado de 21
+        while (soma > 21 && ases > 0) {
+            soma -= 10; // trocar um Ás de 11 para 1
+            ases--;
+        }
+
         return soma;
     }
 
@@ -148,5 +209,19 @@ public class Game {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException ignored) {}
+    }
+
+    private String converterCartasParaJson(List<String[]> cartas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < cartas.size(); i++) {
+            String[] carta = cartas.get(i);
+            sb.append("[\"").append(carta[0]).append("\",\"").append(carta[1]).append("\"]");
+            if (i < cartas.size() - 1) {
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

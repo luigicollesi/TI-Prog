@@ -1,9 +1,10 @@
-package com.app;
-
-import com.app.db.DatabaseConnection;
-import com.app.ui.LoginFundo;
+package app;
 
 import javax.swing.*;
+
+import app.db.DatabaseConnection;
+import app.ui.LoginFrame;
+
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,7 +13,7 @@ public class AppMain {
     public static void main(String[] args) {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.close();
-            SwingUtilities.invokeLater(() -> new LoginFundo().setVisible(true));
+            new LoginFrame();
         } catch (SQLException ex) {
             ex.printStackTrace();
             // Ajusta fonte das caixas de diálogo para tamanhos mais legíveis

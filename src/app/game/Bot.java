@@ -1,4 +1,4 @@
-package com.app.game;
+package app.game;
 
 public class Bot {
     private int soma = 0;

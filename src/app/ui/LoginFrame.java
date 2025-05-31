@@ -1,17 +1,17 @@
-package com.app.ui;
-
-import com.app.db.DatabaseOperations;
+package app.ui;
 
 import javax.swing.*;
+
+import app.db.DatabaseOperations;
+
 import java.awt.*;
-import java.awt.event.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  * Tela inicial de login e criação de conta com botão Sair e fontes maiores.
  */
-public class LoginFundo extends JFrame implements ActionListener {
+public class LoginFrame extends JFrame {
     private JPanel centralPanel;
     private JPanel panelNorth;
     private JPanel buttonPanel;
@@ -19,27 +19,20 @@ public class LoginFundo extends JFrame implements ActionListener {
 
     private JLabel lblTitulo;
     private JLabel lblUser;
-    private JTextField txtUser;
+    protected JTextField txtUser;
     private JLabel lblPass;
-    private JPasswordField txtPass;
+    protected JPasswordField txtPass;
     private JButton btnLogin;
     private JButton btnCreate;
     private JButton btnExit;
     private JPanel backgroundPanel;
 
-    private GridBagConstraints gbc;
-
     private Image backgroundImage = new ImageIcon("public/Images/LoginFundo.png").getImage();
 
-    public LoginFundo() {
-        super("Blackjack - Login");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    public LoginFrame() {
+        setTitle("Blackjack - Login");
         setSize(1000, 800);
-        setLocationRelativeTo(null);
-
-        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.BOLD, 32));
-        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 28));
-        UIManager.put("OptionPane.minimumSize", new Dimension(500, 200));
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         backgroundPanel = new JPanel() {
             @Override
@@ -56,17 +49,19 @@ public class LoginFundo extends JFrame implements ActionListener {
         centralPanel.setPreferredSize(new Dimension(600, 400));
 
         // Cabeçalho
-        lblTitulo = new OutlinedLabel("Faça login");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 36));
-        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo = CustomInput.createOutlinedLabel(
+            "Faça login",
+            new Font("Arial", Font.BOLD, 36),
+            Color.WHITE
+        );
 
-        btnExit = RoundedInput.createButtom("Sair");
+        btnExit = CustomInput.createButtom("Sair", Color.BLACK);
         btnExit.setPreferredSize(new Dimension(120, 50));
         btnExit.addActionListener(e -> System.exit(0));
 
         panelNorth = new JPanel(new BorderLayout());
         panelNorth.setOpaque(false);
-        panelNorth.add(lblTitulo, BorderLayout.CENTER);
+        panelNorth.add(lblTitulo, BorderLayout.WEST);
         panelNorth.add(btnExit, BorderLayout.EAST);
         centralPanel.add(panelNorth, BorderLayout.NORTH);
 
@@ -74,19 +69,21 @@ public class LoginFundo extends JFrame implements ActionListener {
         fieldPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         fieldPanel.setOpaque(false);
 
-        lblUser = new OutlinedLabel("Usuário:");
-        lblUser.setFont(new Font("Arial", Font.PLAIN, 30));
-        lblUser.setForeground(Color.WHITE);
-        txtUser = RoundedInput.createTextField();
+        lblUser = CustomInput.createOutlinedLabel(
+            "Usuário:",
+            new Font("Arial", Font.PLAIN, 30),
+            Color.WHITE
+        );
+        txtUser = CustomInput.createTextField();
         txtUser.setFont(new Font("Arial", Font.PLAIN, 28));
-        txtUser.setPreferredSize(new Dimension(0, 10));
 
-        lblPass = new OutlinedLabel("Senha:");
-        lblPass.setFont(new Font("Arial", Font.PLAIN, 30));
-        lblPass.setForeground(Color.WHITE);
-        txtPass = RoundedInput.createTextFieldPass();
+        lblPass = CustomInput.createOutlinedLabel(
+            "Senha:",
+            new Font("Arial", Font.PLAIN, 30),
+            Color.WHITE
+        );
+        txtPass = CustomInput.createTextFieldPass();
         txtPass.setFont(new Font("Arial", Font.PLAIN, 28));
-        txtUser.setPreferredSize(new Dimension(0, 10));
 
         fieldPanel.add(lblUser); fieldPanel.add(txtUser);
         fieldPanel.add(lblPass); fieldPanel.add(txtPass);
@@ -95,22 +92,19 @@ public class LoginFundo extends JFrame implements ActionListener {
         // Botões
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setOpaque(false);
-        btnLogin = RoundedInput.createButtom("Login");
+        btnLogin = CustomInput.createButtom("Login", Color.BLACK);
         btnLogin.setPreferredSize(new Dimension(200, 60));
-        btnCreate = RoundedInput.createButtom("Criar Conta");
+        btnCreate = CustomInput.createButtom("Criar Conta", Color.BLACK);
         btnCreate.setPreferredSize(new Dimension(250, 60));
 
-        btnLogin.addActionListener(this);
+        btnLogin.addActionListener(e -> LoginAtempt());
         btnCreate.addActionListener(e -> showCreateAccountDialog());
 
         buttonPanel.add(btnLogin);
         buttonPanel.add(btnCreate);
         centralPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(0, 0, 120, 0);   // top, left, bottom, right
 
         backgroundPanel.add(centralPanel, gbc);
@@ -118,8 +112,7 @@ public class LoginFundo extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    private void LoginAtempt() {
         // Somente login
         String user = txtUser.getText().trim();
         String pass = new String(txtPass.getPassword());
@@ -129,11 +122,12 @@ public class LoginFundo extends JFrame implements ActionListener {
         );
         try {
             if (rs != null && rs.next()) {
-                CustomDialog.showMessage(this, "Login bem-sucedido!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                String userId = rs.getString("id");
                 rs.getStatement().getConnection().close();
                 // Abre MenuFrame e fecha Login
-                new MenuFrame();
+                JFrame f = new MenuFrame(this, userId);
                 dispose();
+                CustomDialog.showMessage(f, "Login bem-sucedido!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 CustomDialog.showMessage(this, "Credenciais inválidas.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -150,17 +144,14 @@ public class LoginFundo extends JFrame implements ActionListener {
         dialog.setSize(800, 500);
         dialog.setLocationRelativeTo(this);
 
-        Image fundo = new ImageIcon("public/Images/LoginFundo.png").getImage();
-
         JPanel backgroundPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.drawImage(fundo, 0, 0, getWidth(), getHeight(), this);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
                 g2d.setColor(new Color(0, 0, 0, 150));
                 g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.dispose();
             }
         };
         backgroundPanel.setLayout(new BorderLayout(20, 20));
@@ -173,22 +164,26 @@ public class LoginFundo extends JFrame implements ActionListener {
 
         JPanel fields = new JPanel(new GridLayout(3, 2, 15, 15));
         fields.setOpaque(false);
+
         JLabel lblNewUser = new JLabel("Usuário:");
         lblNewUser.setFont(new Font("Arial", Font.PLAIN, 28));
         lblNewUser.setForeground(Color.WHITE);
-        JTextField newUser = RoundedInput.createTextField();
+
+        JTextField newUser = CustomInput.createTextField();
         newUser.setFont(new Font("Arial", Font.PLAIN, 28));
 
         JLabel lblNewPass = new JLabel("Senha:");
         lblNewPass.setFont(new Font("Arial", Font.PLAIN, 28));
         lblNewPass.setForeground(Color.WHITE);
-        JPasswordField newPass = RoundedInput.createTextFieldPass();
+
+        JPasswordField newPass = CustomInput.createTextFieldPass();
         newPass.setFont(new Font("Arial", Font.PLAIN, 28));
 
         JLabel lblConfirm = new JLabel("Confirmar senha:");
         lblConfirm.setFont(new Font("Arial", Font.PLAIN, 28));
         lblConfirm.setForeground(Color.WHITE);
-        JPasswordField confirmPass = RoundedInput.createTextFieldPass();
+
+        JPasswordField confirmPass = CustomInput.createTextFieldPass();
         confirmPass.setFont(new Font("Arial", Font.PLAIN, 28));
 
         fields.add(lblNewUser); fields.add(newUser);
@@ -199,15 +194,10 @@ public class LoginFundo extends JFrame implements ActionListener {
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttons.setOpaque(false);
         
-        JButton btnConfirm = RoundedInput.createButtom("Confirmar");
-        JButton btnCancel = RoundedInput.createButtom("Cancelar");
-        buttons.add(btnConfirm);
-        buttons.add(btnCancel);
-        backgroundPanel.add(buttons, BorderLayout.SOUTH);
+        JButton btnConfirm = CustomInput.createButtom("Confirmar", Color.BLACK);
+        JButton btnCancel = CustomInput.createButtom("Cancelar", Color.BLACK);
 
-        dialog.setContentPane(backgroundPanel);
-
-        btnConfirm.addActionListener(ev -> {
+        btnConfirm.addActionListener(e -> {
             String u = newUser.getText().trim();
             String p = new String(newPass.getPassword());
             String cp = new String(confirmPass.getPassword());
@@ -257,8 +247,13 @@ public class LoginFundo extends JFrame implements ActionListener {
             dialog.dispose();
         });
 
-        btnCancel.addActionListener(ev -> dialog.dispose());
+        btnCancel.addActionListener(e -> dialog.dispose());
 
+        buttons.add(btnConfirm);
+        buttons.add(btnCancel);
+        backgroundPanel.add(buttons, BorderLayout.SOUTH);
+
+        dialog.setContentPane(backgroundPanel);
         dialog.setVisible(true);
     }
 }

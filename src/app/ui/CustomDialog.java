@@ -1,4 +1,4 @@
-package com.app.ui;
+package app.ui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,11 +16,10 @@ public class CustomDialog {
 
         dialog.setSize(dialogSize);
         dialog.setLocationRelativeTo(parent);
-        dialog.setLayout(new BorderLayout());
 
         // Estilos
-        Color bgColor = new Color(30, 30, 30, 240);            // fundo principal
-        Color innerBoxColor = new Color(20, 20, 20, 220);      // fundo texto
+        Color bgColor = new Color(30, 30, 30, 240);
+        Color innerBoxColor = new Color(20, 20, 20, 220);
         Color borderColor = null;
         String iconChar = null;
 
@@ -52,16 +51,14 @@ public class CustomDialog {
             iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             iconLabel.setFont(new Font("SansSerif", Font.BOLD, 42));
             iconLabel.setForeground(borderColor);
-            iconLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
             messageBox.add(iconLabel);
         }
 
         JLabel lblMsg = new JLabel("<html><div style='text-align: center;'>" + message + "</div></html>", SwingConstants.CENTER);
         lblMsg.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblMsg.setAlignmentY(Component.CENTER_ALIGNMENT);
         lblMsg.setFont(new Font("Arial", Font.BOLD, 22));
         lblMsg.setForeground(Color.WHITE);
-        lblMsg.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        lblMsg.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         messageBox.add(lblMsg);
 
         panel.add(messageBox, BorderLayout.CENTER);
@@ -69,7 +66,7 @@ public class CustomDialog {
         // Botão
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
-        JButton btnOk = RoundedInput.createButtom("OK");
+        JButton btnOk = CustomInput.createButtom("OK", Color.BLACK);
         btnOk.setPreferredSize(new Dimension(150, 50));
         btnOk.addActionListener(e -> dialog.dispose());
         buttonPanel.add(btnOk);
@@ -78,5 +75,9 @@ public class CustomDialog {
 
         dialog.add(panel);
         dialog.setVisible(true);
+    }
+
+    private CustomDialog() {
+        throw new UnsupportedOperationException("Utility class");
     }
 }
