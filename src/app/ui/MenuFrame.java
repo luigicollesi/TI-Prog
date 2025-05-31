@@ -33,18 +33,16 @@ public class MenuFrame extends JFrame {
 
         btnJogar = CustomInput.createButtom("Jogar", Color.BLACK);
         btnJogar.setBounds(350, 250, 300, 80);
-        btnJogar.addActionListener(e -> {
-            CustomDialog.showMessage(this, "Iniciando o jogo...", "Jogar", JOptionPane.INFORMATION_MESSAGE);
-
+        btnJogar.addActionListener(e -> 
+        {
             new GameFrame(this, userId);
             dispose();
         });
 
         btnHistorico = CustomInput.createButtom("Ver Histórico", Color.BLACK);
         btnHistorico.setBounds(350, 370, 300, 80);
-        btnHistorico.addActionListener(e -> {
-            CustomDialog.showMessage(this, "Exibindo histórico de partidas...", "Histórico", JOptionPane.INFORMATION_MESSAGE);
-            
+        btnHistorico.addActionListener(e -> 
+        {            
             new HistoricoFrame(this, userId);
             dispose();
         });
