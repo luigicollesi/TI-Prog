@@ -5,7 +5,6 @@ import app.game.Game;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,10 +57,8 @@ public class HistoricoFrame extends JFrame {
                 String texto = (venceu ? "Ganhou  +" : "Perdeu  -") + "$" + valor;
                 JButton btn = CustomInput.createButtom(texto, venceu ? new Color(0, 220, 0) : new Color(220, 50, 50));
                 btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-                btn.setForeground(venceu ? new Color(0, 220, 0) : new Color(220, 50, 50));
-                btn.setFont(new Font("Arial", Font.BOLD, 20));
-                btn.setMaximumSize(new Dimension(200, 50));
-                btn.addActionListener((ActionEvent e) -> mostrarDetalhes(cartasPlayer, cartasBot));
+                btn.setMaximumSize(new Dimension(250, 60));
+                btn.addActionListener(e -> mostrarDetalhes(cartasPlayer, cartasBot));
 
                 centerPanel.add(btn);
                 centerPanel.add(Box.createVerticalStrut(15));
@@ -81,9 +78,7 @@ public class HistoricoFrame extends JFrame {
         backgroundPanel.add(scrollPane, BorderLayout.CENTER);
 
         JButton btnVoltar = CustomInput.createButtom("Voltar", Color.BLACK);
-        btnVoltar.setFont(new Font("Arial", Font.BOLD, 18));
-        btnVoltar.setPreferredSize(new Dimension(150, 45));
-        btnVoltar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnVoltar.setPreferredSize(new Dimension(250, 60));
         btnVoltar.addActionListener(e -> {
             new MenuFrame(this, userId);
             dispose();
@@ -103,7 +98,7 @@ public class HistoricoFrame extends JFrame {
         List<String[]> cartasBot = parseCartasJson(cartasBotJSON);
 
         JFrame detalhe = new JFrame("Detalhes da Partida");
-        detalhe.setSize(800, 450);
+        detalhe.setSize(800, 610);
         detalhe.setLayout(null);
         detalhe.setLocationRelativeTo(this);
 
@@ -124,36 +119,38 @@ public class HistoricoFrame extends JFrame {
         int somaBot = Game.somar(cartasBot);
 
         JLabel lblSomaBot = new JLabel("Bot: " + somaBot, SwingConstants.CENTER);
-        lblSomaBot.setFont(new Font("Arial", Font.BOLD, 22));
+        lblSomaBot.setFont(new Font("Arial", Font.BOLD, 25));
+        lblSomaBot.setForeground(Color.WHITE);
         lblSomaBot.setBounds(0, 10, 800, 30);
         backgroundPanel.add(lblSomaBot);
 
         JPanel painelBot = new JPanel();
-        painelBot.setBounds(150, 50, 500, 130);
+        painelBot.setBounds(150, 50, 500, 160);
         painelBot.setOpaque(false);
         for (String[] carta : cartasBot) {
-            JLabel img = getCartaLabel(carta, 135); // altura aumentada
+            JLabel img = getCartaLabel(carta);
             painelBot.add(img);
         }
         backgroundPanel.add(painelBot);
 
         JLabel lblSomaPlayer = new JLabel("Jogador: " + somaPlayer, SwingConstants.CENTER);
-        lblSomaPlayer.setFont(new Font("Arial", Font.BOLD, 22));
-        lblSomaPlayer.setBounds(0, 190, 800, 30);
+        lblSomaPlayer.setFont(new Font("Arial", Font.BOLD, 25));
+        lblSomaPlayer.setForeground(Color.WHITE);
+        lblSomaPlayer.setBounds(0, 230, 800, 30);
         backgroundPanel.add(lblSomaPlayer);
 
         JPanel painelPlayer = new JPanel();
-        painelPlayer.setBounds(150, 230, 500, 130);
+        painelPlayer.setBounds(150, 280, 500, 160);
         painelPlayer.setOpaque(false);
         for (String[] carta : cartasPlayer) {
-            JLabel img = getCartaLabel(carta, 135); // altura aumentada
+            JLabel img = getCartaLabel(carta);
             painelPlayer.add(img);
         }
         backgroundPanel.add(painelPlayer);
 
         JButton btnFechar = CustomInput.createButtom("Fechar", Color.BLACK);
-        btnFechar.setFont(new Font("Arial", Font.BOLD, 18));
-        btnFechar.setBounds(325, 380, 150, 40);
+        btnFechar.setPreferredSize(new Dimension(250, 60));
+        btnFechar.setBounds(275, 470, 250, 60);
         btnFechar.addActionListener(e -> detalhe.dispose());
         backgroundPanel.add(btnFechar);
 
@@ -161,10 +158,10 @@ public class HistoricoFrame extends JFrame {
         detalhe.setVisible(true);
     }
 
-    private JLabel getCartaLabel(String[] carta, int altura) {
+    private JLabel getCartaLabel(String[] carta) {
         String path = "public/Cartas/" + carta[1] + "/" + carta[0] + ".png";
         ImageIcon icon = new ImageIcon(path);
-        Image img = icon.getImage().getScaledInstance(80, altura, Image.SCALE_SMOOTH);
+        Image img = icon.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
         return new JLabel(new ImageIcon(img));
     }
 

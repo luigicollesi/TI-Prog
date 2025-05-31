@@ -152,6 +152,7 @@ public class LoginFrame extends JFrame {
                 g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
                 g2d.setColor(new Color(0, 0, 0, 150));
                 g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
             }
         };
         backgroundPanel.setLayout(new BorderLayout(20, 20));
