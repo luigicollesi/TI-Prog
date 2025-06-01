@@ -252,4 +252,8 @@ public class Game {
     public int getSaldo() {
         return saldo;
     }
+    
+    public int getValorAposta() {
+        return valorAposta;
+    }
 }

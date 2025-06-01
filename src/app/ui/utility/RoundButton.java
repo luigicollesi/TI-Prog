@@ -37,4 +37,8 @@ public class RoundButton extends JButton {
         g2.dispose();
     }
 
+    public Color getColor() {
+        return color;
+    }
+
 }

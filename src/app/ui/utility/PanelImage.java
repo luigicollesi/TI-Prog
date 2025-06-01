@@ -1,8 +1,6 @@
 package app.ui.utility;
 
-import java.awt.Image;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 
 public class PanelImage extends javax.swing.JPanel {
     private final java.awt.Image image;
@@ -21,13 +19,21 @@ public class PanelImage extends javax.swing.JPanel {
             if (isDark) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-                g2d.setColor(new java.awt.Color(0, 0, 0, 150));
+                g2d.setColor(new Color(0, 0, 0, 150));
                 g2d.fillRect(0, 0, getWidth(), getHeight());
                 g2d.dispose();
             } else {
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
             }
         }
+    }
+
+    public Image getImage() {
+        return image;
+    }
+    
+    public boolean isDark() {
+        return isDark;
     }
     
 }

@@ -60,7 +60,6 @@ public class GameFrame extends JFrame {
         northPanel.add(lblSaldo, BorderLayout.WEST);
 
         btnSair = new RoundButton("Sair", Color.BLACK);
-        btnSair.setFont(new Font("Arial", Font.BOLD, 30));
         btnSair.setPreferredSize(new Dimension(130, 50));
         btnSair.addActionListener(e -> {
             menuFrame.open(this);
@@ -124,18 +123,15 @@ public class GameFrame extends JFrame {
 
         // Botões de jogo (comprar/manter), construídos mas só adicionados depois em botoesGame()
         btnComprar = new RoundButton("Comprar", Color.BLACK);
-        btnComprar.setFont(new Font("Arial", Font.BOLD, 28));
         btnComprar.setPreferredSize(new Dimension(200, 60));
         btnComprar.addActionListener(e -> comprarCarta());
 
         btnManter = new RoundButton("Manter", Color.BLACK);
-        btnManter.setFont(new Font("Arial", Font.BOLD, 28));
         btnManter.setPreferredSize(new Dimension(200, 60));
         btnManter.addActionListener(e -> manterCartas());
 
         // --- Cria os botões de aposta apenas uma vez ---
         btnReset = new RoundButton("Reset", Color.BLACK);
-        btnReset.setFont(new Font("Arial", Font.BOLD, 28));
         btnReset.setPreferredSize(new Dimension(120, 60));
         btnReset.addActionListener(e -> {
             this.apostaAtual = 0;
@@ -143,27 +139,22 @@ public class GameFrame extends JFrame {
         });
 
         btnAposta5 = new RoundButton("+5", Color.BLACK);
-        btnAposta5.setFont(new Font("Arial", Font.BOLD, 28));
         btnAposta5.setPreferredSize(new Dimension(100, 60));
         btnAposta5.addActionListener(e -> adicionarAposta(5));
 
         btnAposta10 = new RoundButton("+10", Color.BLACK);
-        btnAposta10.setFont(new Font("Arial", Font.BOLD, 28));
         btnAposta10.setPreferredSize(new Dimension(100, 60));
         btnAposta10.addActionListener(e -> adicionarAposta(10));
 
         btnAposta25 = new RoundButton("+25", Color.BLACK);
-        btnAposta25.setFont(new Font("Arial", Font.BOLD, 28));
         btnAposta25.setPreferredSize(new Dimension(100, 60));
         btnAposta25.addActionListener(e -> adicionarAposta(25));
 
         btnAposta50 = new RoundButton("+50", Color.BLACK);
-        btnAposta50.setFont(new Font("Arial", Font.BOLD, 28));
         btnAposta50.setPreferredSize(new Dimension(100, 60));
         btnAposta50.addActionListener(e -> adicionarAposta(50));
 
         btnFinalizarAposta = new RoundButton("Finalizar Aposta", Color.BLACK);
-        btnFinalizarAposta.setFont(new Font("Arial", Font.BOLD, 28));
         btnFinalizarAposta.setPreferredSize(new Dimension(300, 60));
         btnFinalizarAposta.addActionListener(e -> finalizarAposta());
 
