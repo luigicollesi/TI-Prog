@@ -1,8 +1,11 @@
-package app.ui;
+package app.ui.Auth;
 
 import javax.swing.*;
 
 import app.db.DatabaseOperations;
+import app.ui.Private.MenuFrame;
+import app.ui.utility.CustomDialog;
+import app.ui.utility.CustomInput;
 
 import java.awt.*;
 import java.sql.ResultSet;

@@ -1,6 +1,7 @@
-package app.ui;
+package app.ui.utility;
 
 import javax.swing.*;
+
 import java.awt.*;
 
 public class CustomDialog {

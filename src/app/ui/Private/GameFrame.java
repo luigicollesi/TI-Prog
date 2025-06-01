@@ -1,6 +1,8 @@
-package app.ui;
-
+package app.ui.Private;
 import app.game.Game;
+import app.ui.utility.CustomDialog;
+import app.ui.utility.CustomInput;
+
 import javax.swing.*;
 import java.awt.*;
 

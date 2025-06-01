@@ -1,6 +1,8 @@
-package app.ui;
+package app.ui.Auth;
 
 import app.db.DatabaseOperations;
+import app.ui.utility.CustomDialog;
+import app.ui.utility.CustomInput;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,6 +1,10 @@
-package app.ui;
+package app.ui.Private;
+
 
 import javax.swing.*;
+
+import app.ui.Auth.LoginFrame;
+import app.ui.utility.CustomInput;
 
 import java.awt.*;
 

@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 import app.db.DatabaseOperations;
-import app.ui.CustomDialog;
-import app.ui.GameFrame;
+import app.ui.Private.GameFrame;
+import app.ui.utility.CustomDialog;
 
 public class Game {
     private final List<String[]> baralho = new ArrayList<>();
