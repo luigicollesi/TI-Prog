@@ -1,10 +1,10 @@
 package app.ui.Private;
 
-
 import app.game.Game;
 import app.ui.utility.CustomInput;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +18,15 @@ public class DetalheFrame extends JDialog {
     private final JPanel painelPlayer;
     private final JButton btnFechar;
 
+    private final JPanel contentPanel;
+    private final JPanel southPanel;
+
     private final HistoricoFrame historicoFrame;
 
     public DetalheFrame(HistoricoFrame parent) {
         super(parent, "Detalhes da Partida", true);
-        setSize(800, 610);
-        setLayout(null);
+        setSize(800, 570);
+        setLocationRelativeTo(parent);
 
         historicoFrame = parent;
 
@@ -39,40 +42,64 @@ public class DetalheFrame extends JDialog {
                 g2d.dispose();
             }
         };
-        fundoDet.setLayout(null);
+        fundoDet.setLayout(new BorderLayout());
+        fundoDet.setBorder(new EmptyBorder(20, 20, 20, 20));
         setContentPane(fundoDet);
+
+        // --- Content Panel (CENTER) ---
+        contentPanel = new JPanel();
+        contentPanel.setOpaque(false);
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
         // Label de soma do Bot
         lblSomaBot = new JLabel("", SwingConstants.CENTER);
         lblSomaBot.setFont(new Font("Arial", Font.BOLD, 25));
         lblSomaBot.setForeground(Color.WHITE);
-        lblSomaBot.setBounds(0, 10, 800, 30);
-        fundoDet.add(lblSomaBot);
+        lblSomaBot.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblSomaBot.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        contentPanel.add(lblSomaBot);
+        contentPanel.add(Box.createVerticalStrut(10));
 
         // Painel para cartas do Bot
-        painelBot = new JPanel();
-        painelBot.setBounds(150, 50, 500, 160);
+        painelBot = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         painelBot.setOpaque(false);
-        fundoDet.add(painelBot);
+        painelBot.setAlignmentX(Component.CENTER_ALIGNMENT);
+        painelBot.setPreferredSize(new Dimension(500, 160));
+        painelBot.setMaximumSize(new Dimension(500, 160));
+        contentPanel.add(painelBot);
+        contentPanel.add(Box.createVerticalStrut(20));
 
         // Label de soma do Jogador
         lblSomaPlayer = new JLabel("", SwingConstants.CENTER);
         lblSomaPlayer.setFont(new Font("Arial", Font.BOLD, 25));
         lblSomaPlayer.setForeground(Color.WHITE);
-        lblSomaPlayer.setBounds(0, 230, 800, 30);
-        fundoDet.add(lblSomaPlayer);
+        lblSomaPlayer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblSomaPlayer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        contentPanel.add(lblSomaPlayer);
+        contentPanel.add(Box.createVerticalStrut(10));
 
         // Painel para cartas do Jogador
-        painelPlayer = new JPanel();
-        painelPlayer.setBounds(150, 280, 500, 160);
+        painelPlayer = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         painelPlayer.setOpaque(false);
-        fundoDet.add(painelPlayer);
+        painelPlayer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        painelPlayer.setPreferredSize(new Dimension(500, 160));
+        painelPlayer.setMaximumSize(new Dimension(500, 160));
+        contentPanel.add(painelPlayer);
+        contentPanel.add(Box.createVerticalGlue());
 
-        // Botão “Fechar”
+        fundoDet.add(contentPanel, BorderLayout.CENTER);
+
+        // --- Botão “Fechar” (SOUTH) ---
+        southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        southPanel.setOpaque(false);
+        southPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+
         btnFechar = CustomInput.createButtom("Fechar", Color.BLACK);
-        btnFechar.setBounds(275, 470, 250, 60);
+        btnFechar.setPreferredSize(new Dimension(250, 60));
         btnFechar.addActionListener(e -> setVisible(false));
-        fundoDet.add(btnFechar);
+        southPanel.add(btnFechar);
+
+        fundoDet.add(southPanel, BorderLayout.SOUTH);
     }
 
     /**

@@ -15,6 +15,10 @@ public class MenuFrame extends JFrame {
     private final JButton btnDeslogar;
     private final Image backgroundImage = new ImageIcon("public/Images/Fundo.png").getImage();
 
+    private final JPanel backgroundPanel;
+    private final JPanel centerPanel;
+    private final JPanel southPanel;
+
     private final GameFrame gameFrame;
     private final HistoricoFrame historicoFrame;
 
@@ -33,7 +37,7 @@ public class MenuFrame extends JFrame {
         setLocation(x, y);
 
         // Painel de fundo com imagem e overlay sem usar null layout
-        JPanel backgroundPanel = new JPanel() {
+        backgroundPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -50,14 +54,15 @@ public class MenuFrame extends JFrame {
         backgroundPanel.setLayout(new BorderLayout());
 
         // --- Centro: botões "Jogar" e "Ver Histórico" empilhados ---
-        JPanel centerPanel = new JPanel();
+        centerPanel = new JPanel();
         centerPanel.setOpaque(false);
         // BoxLayout Y_AXIS para empilhar verticalmente
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
         btnJogar = CustomInput.createButtom("Jogar", Color.BLACK);
         btnJogar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnJogar.setMaximumSize(new Dimension(300, 80));
+        btnJogar.setFont(new Font("Arial", Font.BOLD, 35));
+        btnJogar.setMaximumSize(new Dimension(400, 120));
         btnJogar.addActionListener(e -> {
             gameFrame.open();
             setVisible(false);
@@ -65,7 +70,8 @@ public class MenuFrame extends JFrame {
 
         btnHistorico = CustomInput.createButtom("Ver Histórico", Color.BLACK);
         btnHistorico.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnHistorico.setMaximumSize(new Dimension(300, 80));
+        btnHistorico.setFont(new Font("Arial", Font.BOLD, 35));
+        btnHistorico.setMaximumSize(new Dimension(400, 120));
         btnHistorico.addActionListener(e -> {
             historicoFrame.open();
             setVisible(false);
@@ -81,7 +87,7 @@ public class MenuFrame extends JFrame {
         backgroundPanel.add(centerPanel, BorderLayout.CENTER);
 
         // --- Sul: botões "Sair" e "Deslogar" lado a lado, alinhados à direita ---
-        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
         southPanel.setOpaque(false);
 
         btnDeslogar = CustomInput.createButtom("Deslogar", Color.BLACK);

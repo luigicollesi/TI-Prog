@@ -20,11 +20,13 @@ public class HistoricoFrame extends JFrame {
     private final JPanel bottomPanel;
 
     private final DetalheFrame detalheFrame;
+    private final String userId;
 
     public HistoricoFrame(MenuFrame parent, String userId) {
         setTitle("Histórico de Partidas");
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.userId = userId;
 
         detalheFrame = new DetalheFrame(this);
         menuFrame = parent;
@@ -99,6 +101,35 @@ public class HistoricoFrame extends JFrame {
     }
 
     public void open() {
+        centerPanel.removeAll();
+
+        try {
+            ResultSet rs = DatabaseOperations.executeQuery(
+                "SELECT * FROM historico_partidas WHERE user_id = ? ORDER BY created_at DESC;",
+                new String[]{userId}
+            );
+
+            while (rs != null && rs.next()) {
+                boolean venceu = rs.getInt("venceu") == 1;
+                int valor = rs.getInt("valor");
+                String cartasPlayer = rs.getString("cartas_player");
+                String cartasBot = rs.getString("cartas_bot");
+
+                String texto = (venceu ? "Ganhou  +" : "Perdeu  -") + "$" + valor;
+                JButton btn = CustomInput.createButtom(texto, venceu ? new Color(0, 190, 0) : new Color(220, 50, 50));
+                btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+                btn.setMaximumSize(new Dimension(250, 60));
+                btn.addActionListener(e -> detalheFrame.mostrar(cartasPlayer, cartasBot));
+
+                centerPanel.add(btn);
+                centerPanel.add(Box.createVerticalStrut(15));
+            }
+
+            if (rs != null) rs.getStatement().getConnection().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         Point parentLocation = menuFrame.getLocation();
         int x = parentLocation.x + (menuFrame.getWidth() - getWidth()) / 2;
         int y = parentLocation.y + (menuFrame.getHeight() - getHeight()) / 2 - 70;

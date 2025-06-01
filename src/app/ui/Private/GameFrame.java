@@ -146,7 +146,7 @@ public class GameFrame extends JFrame {
         btnReset.setFont(new Font("Arial", Font.BOLD, 28));
         btnReset.setPreferredSize(new Dimension(120, 60));
         btnReset.addActionListener(e -> {
-            apostaAtual = 0;
+            this.apostaAtual = 0;
             atualizarLabels();
         });
 
@@ -218,20 +218,22 @@ public class GameFrame extends JFrame {
     }
 
     private void adicionarAposta(int valor) {
-        int saldo = match.getSaldo();
-        if (saldo >= valor) {
+        if (match.getSaldo() >= (apostaAtual + valor)) {
             apostaAtual += valor;
-            saldo -= valor;
             atualizarLabels();
         } else {
-            CustomDialog.showMessage(this, "Saldo insuficiente.", "Erro", JOptionPane.WARNING_MESSAGE);
+            CustomDialog.showMessage(this, "Saldo insuficiente.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void finalizarAposta() {
-        painelBotoes.setVisible(false);
-        CustomDialog.showMessage(this, "Aposta de $" + apostaAtual + " finalizada!", "Aposta", JOptionPane.INFORMATION_MESSAGE);
-        iniciarFaseDeJogo();
+        if (apostaAtual == 0) {
+            CustomDialog.showMessage(this, "Sem Aposta, sem Jogo!", "Erro", JOptionPane.ERROR_MESSAGE);
+        } else {
+            painelBotoes.setVisible(false);
+            CustomDialog.showMessage(this, "Aposta de $" + apostaAtual + " finalizada!", "Aposta", JOptionPane.INFORMATION_MESSAGE);
+            iniciarFaseDeJogo();
+        }
     }
 
     private void iniciarFaseDeJogo() {
