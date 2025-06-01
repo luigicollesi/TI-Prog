@@ -2,7 +2,10 @@ package app.ui.Auth;
 
 import app.db.DatabaseOperations;
 import app.ui.utility.CustomDialog;
-import app.ui.utility.CustomInput;
+import app.ui.utility.PanelImage;
+import app.ui.utility.RoundButton;
+import app.ui.utility.RoundPassF;
+import app.ui.utility.RoundTextF;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,17 +36,7 @@ public class CreateAccountFrame extends JDialog {
         setLocationRelativeTo(owner);
 
         // --- Inicializa backgroundPanel com paintComponent personalizado ---
-        backgroundPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                g2d.setColor(new Color(0, 0, 0, 150));
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.dispose();
-            }
-        };
+        backgroundPanel = new PanelImage(backgroundImage, true);
         backgroundPanel.setLayout(new BorderLayout(20, 20));
         backgroundPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setContentPane(backgroundPanel);
@@ -61,19 +54,19 @@ public class CreateAccountFrame extends JDialog {
         lblNewUser = new JLabel("Usuário:");
         lblNewUser.setFont(new Font("Arial", Font.PLAIN, 28));
         lblNewUser.setForeground(Color.WHITE);
-        newUser = CustomInput.createTextField();
+        newUser = new RoundTextF();
         newUser.setFont(new Font("Arial", Font.PLAIN, 28));
 
         lblNewPass = new JLabel("Senha:");
         lblNewPass.setFont(new Font("Arial", Font.PLAIN, 28));
         lblNewPass.setForeground(Color.WHITE);
-        newPass = CustomInput.createTextFieldPass();
+        newPass = new RoundPassF();
         newPass.setFont(new Font("Arial", Font.PLAIN, 28));
 
         lblConfirm = new JLabel("Confirmar senha:");
         lblConfirm.setFont(new Font("Arial", Font.PLAIN, 28));
         lblConfirm.setForeground(Color.WHITE);
-        confirmPass = CustomInput.createTextFieldPass();
+        confirmPass = new RoundPassF();
         confirmPass.setFont(new Font("Arial", Font.PLAIN, 28));
 
         fieldsPanel.add(lblNewUser);
@@ -88,8 +81,8 @@ public class CreateAccountFrame extends JDialog {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonsPanel.setOpaque(false);
 
-        btnConfirm = CustomInput.createButtom("Confirmar", Color.BLACK);
-        btnCancel = CustomInput.createButtom("Cancelar", Color.BLACK);
+        btnConfirm = new RoundButton("Confirmar", Color.BLACK);
+        btnCancel = new RoundButton("Cancelar", Color.BLACK);
 
         // Ação do botão Confirmar
         btnConfirm.addActionListener(e -> {

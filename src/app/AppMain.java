@@ -1,13 +1,13 @@
 package app;
 
-import javax.swing.*;
-
 import app.db.DatabaseConnection;
 import app.ui.Auth.LoginFrame;
 
 import java.awt.Font;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import javax.swing.*;
 
 public class AppMain {
     public static void main(String[] args) {

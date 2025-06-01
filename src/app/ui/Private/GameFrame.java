@@ -1,7 +1,9 @@
 package app.ui.Private;
+
 import app.game.Game;
 import app.ui.utility.CustomDialog;
-import app.ui.utility.CustomInput;
+import app.ui.utility.PanelImage;
+import app.ui.utility.RoundButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,17 +45,7 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         // Painel de fundo com imagem + overlay
-        backgroundPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                g2d.setColor(new Color(0, 0, 0, 150));
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.dispose();
-            }
-        };
+        backgroundPanel = new PanelImage(backgroundImage, true);
         backgroundPanel.setLayout(new BorderLayout());
         backgroundPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         setContentPane(backgroundPanel);
@@ -67,7 +59,7 @@ public class GameFrame extends JFrame {
         lblSaldo.setForeground(Color.WHITE);
         northPanel.add(lblSaldo, BorderLayout.WEST);
 
-        btnSair = CustomInput.createButtom("Sair", Color.BLACK);
+        btnSair = new RoundButton("Sair", Color.BLACK);
         btnSair.setFont(new Font("Arial", Font.BOLD, 30));
         btnSair.setPreferredSize(new Dimension(130, 50));
         btnSair.addActionListener(e -> {
@@ -131,18 +123,18 @@ public class GameFrame extends JFrame {
         backgroundPanel.add(southOuter, BorderLayout.SOUTH);
 
         // Botões de jogo (comprar/manter), construídos mas só adicionados depois em botoesGame()
-        btnComprar = CustomInput.createButtom("Comprar", Color.BLACK);
+        btnComprar = new RoundButton("Comprar", Color.BLACK);
         btnComprar.setFont(new Font("Arial", Font.BOLD, 28));
         btnComprar.setPreferredSize(new Dimension(200, 60));
         btnComprar.addActionListener(e -> comprarCarta());
 
-        btnManter = CustomInput.createButtom("Manter", Color.BLACK);
+        btnManter = new RoundButton("Manter", Color.BLACK);
         btnManter.setFont(new Font("Arial", Font.BOLD, 28));
         btnManter.setPreferredSize(new Dimension(200, 60));
         btnManter.addActionListener(e -> manterCartas());
 
         // --- Cria os botões de aposta apenas uma vez ---
-        btnReset = CustomInput.createButtom("Reset", Color.BLACK);
+        btnReset = new RoundButton("Reset", Color.BLACK);
         btnReset.setFont(new Font("Arial", Font.BOLD, 28));
         btnReset.setPreferredSize(new Dimension(120, 60));
         btnReset.addActionListener(e -> {
@@ -150,27 +142,27 @@ public class GameFrame extends JFrame {
             atualizarLabels();
         });
 
-        btnAposta5 = CustomInput.createButtom("+5", Color.BLACK);
+        btnAposta5 = new RoundButton("+5", Color.BLACK);
         btnAposta5.setFont(new Font("Arial", Font.BOLD, 28));
         btnAposta5.setPreferredSize(new Dimension(100, 60));
         btnAposta5.addActionListener(e -> adicionarAposta(5));
 
-        btnAposta10 = CustomInput.createButtom("+10", Color.BLACK);
+        btnAposta10 = new RoundButton("+10", Color.BLACK);
         btnAposta10.setFont(new Font("Arial", Font.BOLD, 28));
         btnAposta10.setPreferredSize(new Dimension(100, 60));
         btnAposta10.addActionListener(e -> adicionarAposta(10));
 
-        btnAposta25 = CustomInput.createButtom("+25", Color.BLACK);
+        btnAposta25 = new RoundButton("+25", Color.BLACK);
         btnAposta25.setFont(new Font("Arial", Font.BOLD, 28));
         btnAposta25.setPreferredSize(new Dimension(100, 60));
         btnAposta25.addActionListener(e -> adicionarAposta(25));
 
-        btnAposta50 = CustomInput.createButtom("+50", Color.BLACK);
+        btnAposta50 = new RoundButton("+50", Color.BLACK);
         btnAposta50.setFont(new Font("Arial", Font.BOLD, 28));
         btnAposta50.setPreferredSize(new Dimension(100, 60));
         btnAposta50.addActionListener(e -> adicionarAposta(50));
 
-        btnFinalizarAposta = CustomInput.createButtom("Finalizar Aposta", Color.BLACK);
+        btnFinalizarAposta = new RoundButton("Finalizar Aposta", Color.BLACK);
         btnFinalizarAposta.setFont(new Font("Arial", Font.BOLD, 28));
         btnFinalizarAposta.setPreferredSize(new Dimension(300, 60));
         btnFinalizarAposta.addActionListener(e -> finalizarAposta());

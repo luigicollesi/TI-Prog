@@ -1,7 +1,8 @@
 package app.ui.Private;
 
 import app.game.Game;
-import app.ui.utility.CustomInput;
+import app.ui.utility.PanelImage;
+import app.ui.utility.RoundButton;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -31,17 +32,7 @@ public class DetalheFrame extends JDialog {
         historicoFrame = parent;
 
         // Painel de fundo com imagem + overlay
-        fundoDet = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                g2d.setColor(new Color(0, 0, 0, 180));
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.dispose();
-            }
-        };
+        fundoDet = new PanelImage(backgroundImage, true);
         fundoDet.setLayout(new BorderLayout());
         fundoDet.setBorder(new EmptyBorder(20, 20, 20, 20));
         setContentPane(fundoDet);
@@ -94,7 +85,7 @@ public class DetalheFrame extends JDialog {
         southPanel.setOpaque(false);
         southPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        btnFechar = CustomInput.createButtom("Fechar", Color.BLACK);
+        btnFechar = new RoundButton("Fechar", Color.BLACK);
         btnFechar.setPreferredSize(new Dimension(250, 60));
         btnFechar.addActionListener(e -> setVisible(false));
         southPanel.add(btnFechar);

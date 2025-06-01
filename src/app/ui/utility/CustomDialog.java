@@ -67,7 +67,7 @@ public class CustomDialog {
         // Botão
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
-        JButton btnOk = CustomInput.createButtom("OK", Color.BLACK);
+        JButton btnOk = new RoundButton("OK", Color.BLACK);
         btnOk.setPreferredSize(new Dimension(150, 50));
         btnOk.addActionListener(e -> dialog.dispose());
         buttonPanel.add(btnOk);

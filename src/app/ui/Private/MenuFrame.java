@@ -1,12 +1,11 @@
 package app.ui.Private;
 
-
-import javax.swing.*;
-
 import app.ui.Auth.LoginFrame;
-import app.ui.utility.CustomInput;
+import app.ui.utility.PanelImage;
+import app.ui.utility.RoundButton;
 
 import java.awt.*;
+import javax.swing.*;
 
 public class MenuFrame extends JFrame {
     private final JButton btnJogar;
@@ -37,19 +36,7 @@ public class MenuFrame extends JFrame {
         setLocation(x, y);
 
         // Painel de fundo com imagem e overlay sem usar null layout
-        backgroundPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                // Desenha a imagem de fundo
-                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                // Desenha uma camada semitransparente preta por cima
-                g2d.setColor(new Color(0, 0, 0, 150));
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-                g2d.dispose();
-            }
-        };
+        backgroundPanel = new PanelImage(backgroundImage, true);
         // Usa BorderLayout para positionar center e south
         backgroundPanel.setLayout(new BorderLayout());
 
@@ -59,7 +46,7 @@ public class MenuFrame extends JFrame {
         // BoxLayout Y_AXIS para empilhar verticalmente
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        btnJogar = CustomInput.createButtom("Jogar", Color.BLACK);
+        btnJogar = new RoundButton("Jogar", Color.BLACK);
         btnJogar.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnJogar.setFont(new Font("Arial", Font.BOLD, 35));
         btnJogar.setMaximumSize(new Dimension(400, 120));
@@ -68,7 +55,7 @@ public class MenuFrame extends JFrame {
             setVisible(false);
         });
 
-        btnHistorico = CustomInput.createButtom("Ver Histórico", Color.BLACK);
+        btnHistorico = new RoundButton("Ver Histórico", Color.BLACK);
         btnHistorico.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnHistorico.setFont(new Font("Arial", Font.BOLD, 35));
         btnHistorico.setMaximumSize(new Dimension(400, 120));
@@ -90,7 +77,7 @@ public class MenuFrame extends JFrame {
         southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
         southPanel.setOpaque(false);
 
-        btnDeslogar = CustomInput.createButtom("Deslogar", Color.BLACK);
+        btnDeslogar = new RoundButton("Deslogar", Color.BLACK);
         btnDeslogar.setPreferredSize(new Dimension(250, 60));
         btnDeslogar.addActionListener(e -> {
             dispose();
@@ -99,7 +86,7 @@ public class MenuFrame extends JFrame {
             parent.open(this);
         });
 
-        btnSair = CustomInput.createButtom("Sair", Color.BLACK);
+        btnSair = new RoundButton("Sair", Color.BLACK);
         btnSair.setPreferredSize(new Dimension(250, 60));
         btnSair.addActionListener(e -> System.exit(0));
 

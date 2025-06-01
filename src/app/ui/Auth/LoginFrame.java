@@ -5,7 +5,11 @@ import javax.swing.*;
 import app.db.DatabaseOperations;
 import app.ui.Private.MenuFrame;
 import app.ui.utility.CustomDialog;
-import app.ui.utility.CustomInput;
+import app.ui.utility.PanelImage;
+import app.ui.utility.RoundButton;
+import app.ui.utility.RoundPassF;
+import app.ui.utility.RoundTextF;
+import app.ui.utility.OutlineLabel;
 
 import java.awt.*;
 import java.sql.ResultSet;
@@ -38,13 +42,7 @@ public class LoginFrame extends JFrame {
 
         createAccountFrame = new CreateAccountFrame(this);
 
-        backgroundPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
+        backgroundPanel = new PanelImage(backgroundImage, false);
         backgroundPanel.setLayout(new GridBagLayout());
 
         centralPanel = new JPanel();
@@ -53,13 +51,13 @@ public class LoginFrame extends JFrame {
         centralPanel.setPreferredSize(new Dimension(600, 400));
 
         // Cabeçalho
-        lblTitulo = CustomInput.createOutlinedLabel(
+        lblTitulo = new OutlineLabel(
             "Faça login",
             new Font("Arial", Font.BOLD, 36),
             Color.WHITE
         );
 
-        btnExit = CustomInput.createButtom("Sair", Color.BLACK);
+        btnExit = new RoundButton("Sair", Color.black);
         btnExit.setPreferredSize(new Dimension(120, 50));
         btnExit.addActionListener(e -> System.exit(0));
 
@@ -73,20 +71,20 @@ public class LoginFrame extends JFrame {
         fieldPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         fieldPanel.setOpaque(false);
 
-        lblUser = CustomInput.createOutlinedLabel(
+        lblUser = new OutlineLabel(
             "Usuário:",
             new Font("Arial", Font.PLAIN, 30),
             Color.WHITE
         );
-        txtUser = CustomInput.createTextField();
+        txtUser = new RoundTextF();
         txtUser.setFont(new Font("Arial", Font.PLAIN, 28));
 
-        lblPass = CustomInput.createOutlinedLabel(
+        lblPass = new OutlineLabel(
             "Senha:",
             new Font("Arial", Font.PLAIN, 30),
             Color.WHITE
         );
-        txtPass = CustomInput.createTextFieldPass();
+        txtPass = new RoundPassF();
         txtPass.setFont(new Font("Arial", Font.PLAIN, 28));
 
         fieldPanel.add(lblUser); 
@@ -99,11 +97,11 @@ public class LoginFrame extends JFrame {
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setOpaque(false);
 
-        btnLogin = CustomInput.createButtom("Login", Color.BLACK);
+        btnLogin = new RoundButton("Login", Color.BLACK);
         btnLogin.setPreferredSize(new Dimension(200, 60));
         btnLogin.addActionListener(e -> LoginAtempt());
 
-        btnCreate = CustomInput.createButtom("Criar Conta", Color.BLACK);
+        btnCreate = new RoundButton("Criar Conta", Color.BLACK);
         btnCreate.setPreferredSize(new Dimension(250, 60));
         btnCreate.addActionListener(e -> {
             // Abre a nova classe CreateAccountFrame
