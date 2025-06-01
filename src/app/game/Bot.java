@@ -1,25 +1,25 @@
 package app.game;
 
-public class Bot {
-    private int soma = 0;
+import java.util.ArrayList;
+import java.util.List;
 
+public class Bot {
+    // Guarda todas as cartas que o bot já recebeu
+    private final List<String[]> cartasBot = new ArrayList<>();
+    
     public int game(String[] carta1, String[] carta2) {
-        soma = valor(carta1[0]) + valor(carta2[0]);
-        return soma < 17 ? 0 : 1;
+        cartasBot.clear();
+        cartasBot.add(carta1);
+        cartasBot.add(carta2);
+
+        int somaAtual = Game.somar(cartasBot);
+        return (somaAtual < 17) ? 0 : 1;
     }
 
     public int add(String[] novaCarta) {
-        soma += valor(novaCarta[0]);
-        return soma < 17 ? 0 : 1;
-    }
+        cartasBot.add(novaCarta);
 
-    private int valor(String v) {
-        switch (v) {
-            case "J":
-            case "Q":
-            case "K": return 10;
-            case "A": return 11;
-            default: return Integer.parseInt(v);
-        }
+        int somaAtual = Game.somar(cartasBot);
+        return (somaAtual < 17) ? 0 : 1;
     }
 }

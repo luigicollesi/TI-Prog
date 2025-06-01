@@ -1,59 +1,33 @@
 package app.ui;
 
-import javax.swing.*;
-
-import app.db.DatabaseOperations;
 import app.game.Game;
-
+import javax.swing.*;
 import java.awt.*;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class GameFrame extends JFrame {
-    private JPanel backgroundPanel;
-    private JLabel lblSaldo;
-    private JLabel lblAposta;
-    private JPanel painelCartasJogador;
-    private JPanel painelCartasMesa;
-    private JPanel painelBotoes;
-    private JButton btnSair;
-    private JLabel lblValorCartasJogador;
+    private final JPanel backgroundPanel;
+    private final JLabel lblSaldo;
+    private final JLabel lblAposta;
+    private final JPanel painelCartasJogador;
+    private final JPanel painelCartasMesa;
+    private final JPanel painelBotoes;
+    private final JButton btnSair;
+    private final JLabel lblValorCartasJogador;
 
-    private int saldo = 0;
+    private final MenuFrame menuFrame;;
+
     private int apostaAtual = 0;
 
-    private Image backgroundImage = new ImageIcon("public/Images/GameFundo.png").getImage();
-    private Game match;
-    private final String userId;
+    private final Image backgroundImage = new ImageIcon("public/Images/GameFundo.png").getImage();
+    private final Game match;
 
-    public GameFrame(JFrame f, String userId) {
-        this.userId = userId;
-
-        try {
-            ResultSet rs = DatabaseOperations.executeQuery(
-                "SELECT money FROM usuarios WHERE id = ?",
-                new String[]{userId}
-            );
-
-            if (rs != null && rs.next()) {
-                saldo = rs.getInt("money");
-                rs.getStatement().getConnection().close();
-            } else {
-                CustomDialog.showMessage(this, "Usuário não encontrado no banco de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            CustomDialog.showMessage(this, "Erro ao buscar saldo do banco de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+    public GameFrame(MenuFrame parent, String userId) {
+        this.match = new Game(this, userId);
 
         setSize(1000, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        Point parentLocation = f.getLocation();
-        int x = parentLocation.x + (f.getWidth() - getWidth()) / 2;
-        int y = parentLocation.y + (f.getHeight() - getHeight()) / 2 - 70;
-        setLocation(x, y);
+        menuFrame = parent;
 
         backgroundPanel = new JPanel() {
             @Override
@@ -69,7 +43,7 @@ public class GameFrame extends JFrame {
         backgroundPanel.setLayout(null);
 
         // Label do saldo (topo)
-        lblSaldo = new JLabel("Saldo: $" + saldo, SwingConstants.LEFT);
+        lblSaldo = new JLabel("Saldo: $" + match.getSaldo(), SwingConstants.LEFT);
         lblSaldo.setFont(new Font("Arial", Font.BOLD, 32));
         lblSaldo.setForeground(Color.WHITE);
         lblSaldo.setBounds(30, 10, 400, 40);
@@ -79,8 +53,8 @@ public class GameFrame extends JFrame {
         btnSair.setFont(new Font("Arial", Font.BOLD, 20));
         btnSair.setBounds(800, 20, 150, 50);
         btnSair.addActionListener(e -> {
-            new MenuFrame(this, userId); // Volta ao menu
-            this.dispose();
+            menuFrame.open(this);
+            setVisible(false);
         });
 
         // Label de aposta (centralizada)
@@ -119,8 +93,6 @@ public class GameFrame extends JFrame {
         backgroundPanel.add(painelBotoes);
         backgroundPanel.add(lblValorCartasJogador);
         setContentPane(backgroundPanel);
-
-        setVisible(true);
     }
 
     private void comecarApostas(){
@@ -175,6 +147,7 @@ public class GameFrame extends JFrame {
     }
 
     private void adicionarAposta(int valor) {
+        int saldo = match.getSaldo();
         if (saldo >= valor) {
             apostaAtual += valor;
             saldo -= valor;
@@ -192,11 +165,12 @@ public class GameFrame extends JFrame {
 
     private void iniciarFaseDeJogo() {
         setTitle("Blackjack - Fase de Jogo");
-        this.match = new Game(this, apostaAtual, saldo, userId);
+        match.Init(apostaAtual);
+        atualizarLabels();
     }
 
     private void atualizarLabels() {
-        lblSaldo.setText("Saldo: $" + saldo);
+        lblSaldo.setText("Saldo: $" + match.getSaldo());
         lblAposta.setText("Apostando: $" + apostaAtual);
     }
 
@@ -239,9 +213,8 @@ public class GameFrame extends JFrame {
         botoesGame();
     }
 
-    public void restart(int novoSaldo){
+    public void restart(){
         this.apostaAtual = 0;
-        this.saldo = novoSaldo;
 
         atualizarLabels();
 
@@ -257,6 +230,14 @@ public class GameFrame extends JFrame {
         lblValorCartasJogador.revalidate();
         lblValorCartasJogador.repaint();
         comecarApostas();
+    }
+
+    public void open() {
+        Point parentLocation = menuFrame.getLocation();
+        int x = parentLocation.x + (menuFrame.getWidth() - getWidth()) / 2;
+        int y = parentLocation.y + (menuFrame.getHeight() - getHeight()) / 2 - 70;
+        setLocation(x, y);
+        setVisible(true);
     }
 
 }

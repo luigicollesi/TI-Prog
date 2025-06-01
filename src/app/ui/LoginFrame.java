@@ -8,26 +8,24 @@ import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * Tela inicial de login e criação de conta com botão Sair e fontes maiores.
- */
+
 public class LoginFrame extends JFrame {
-    private JPanel centralPanel;
-    private JPanel panelNorth;
-    private JPanel buttonPanel;
-    private JPanel fieldPanel;
+    private final JPanel centralPanel;
+    private final JPanel panelNorth;
+    private final JPanel buttonPanel;
+    private final JPanel fieldPanel;
 
-    private JLabel lblTitulo;
-    private JLabel lblUser;
-    protected JTextField txtUser;
-    private JLabel lblPass;
-    protected JPasswordField txtPass;
-    private JButton btnLogin;
-    private JButton btnCreate;
-    private JButton btnExit;
-    private JPanel backgroundPanel;
+    private final JLabel lblTitulo;
+    private final JLabel lblUser;
+    protected final JTextField txtUser;
+    private final JLabel lblPass;
+    protected final JPasswordField txtPass;
+    private final JButton btnLogin;
+    private final JButton btnCreate;
+    private final JButton btnExit;
+    private final JPanel backgroundPanel;
 
-    private Image backgroundImage = new ImageIcon("public/Images/LoginFundo.png").getImage();
+    private final Image backgroundImage = new ImageIcon("public/Images/LoginFundo.png").getImage();
 
     public LoginFrame() {
         setTitle("Blackjack - Login");
@@ -105,7 +103,7 @@ public class LoginFrame extends JFrame {
         centralPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, 0, 120, 0);   // top, left, bottom, right
+        gbc.insets = new Insets(0, 0, 120, 0);
 
         backgroundPanel.add(centralPanel, gbc);
         setContentPane(backgroundPanel);
@@ -125,9 +123,9 @@ public class LoginFrame extends JFrame {
                 String userId = rs.getString("id");
                 rs.getStatement().getConnection().close();
                 // Abre MenuFrame e fecha Login
-                JFrame f = new MenuFrame(this, userId);
-                dispose();
-                CustomDialog.showMessage(f, "Login bem-sucedido!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                MenuFrame menuFrame = new MenuFrame(this, userId);
+                setVisible(false);
+                CustomDialog.showMessage(menuFrame, "Login bem-sucedido!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 CustomDialog.showMessage(this, "Credenciais inválidas.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -255,5 +253,13 @@ public class LoginFrame extends JFrame {
 
         dialog.setContentPane(backgroundPanel);
         dialog.setVisible(true);
+    }
+
+    public void open(JFrame frame) {
+        Point parentLocation = frame.getLocation();
+        int x = parentLocation.x + (frame.getWidth() - getWidth()) / 2;
+        int y = parentLocation.y + (frame.getHeight() - getHeight()) / 2 - 70;
+        setLocation(x, y);
+        setVisible(true);
     }
 }

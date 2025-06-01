@@ -1,6 +1,9 @@
 package app.game;
 
 import javax.swing.*;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 import app.db.DatabaseOperations;
@@ -13,18 +16,37 @@ public class Game {
     private final List<String[]> cartasJogador = new ArrayList<>();
     private final Bot bot;
     private final GameFrame frame;
-    private final int valorAposta;
-    private final int saldo;
     private final String userId;
+    private int valorAposta;
+    protected int saldo;
 
-    public Game(GameFrame frame, int apostaAtual, int saldo, String userId) {
+    public Game(GameFrame frame, String userId) {
         this.frame = frame;
         this.bot = new Bot();
-        this.valorAposta = apostaAtual;
-        this.saldo = saldo;
         this.userId = userId;
 
-        // Atualiza o valor de 'money' no banco
+        try {
+            ResultSet rs = DatabaseOperations.executeQuery(
+                "SELECT money FROM usuarios WHERE id = ?",
+                new String[]{userId}
+            );
+
+            if (rs != null && rs.next()) {
+                this.saldo = rs.getInt("money");
+                rs.getStatement().getConnection().close();
+            } else {
+                CustomDialog.showMessage(frame, "Usuário não encontrado no banco de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            CustomDialog.showMessage(frame, "Erro ao buscar saldo do banco de dados.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void Init(int apostaAtual) {
+        this.valorAposta = apostaAtual;
+        this.saldo -= apostaAtual;
+
         DatabaseOperations.executeUpdate(
             "UPDATE usuarios SET money = ? WHERE id = ?",
             new String[]{String.valueOf(saldo), userId}
@@ -47,6 +69,7 @@ public class Game {
                 {"8", "Paus"}, {"9", "Paus"}, {"10", "Paus"}, {"J", "Paus"}, {"Q", "Paus"}, {"K", "Paus"}, {"A", "Paus"}
         };
 
+        baralho.clear();
         baralho.addAll(Arrays.asList(cartas));
         Collections.shuffle(baralho);
     }
@@ -123,7 +146,6 @@ public class Game {
         int totalJogador = somar(cartasJogador);
 
         String resultado;
-        int novoSaldo = saldo;
         int valorGame = valorAposta;
         boolean venceu = false;
 
@@ -134,13 +156,13 @@ public class Game {
             boolean vitoriaPor21 = (totalJogador == 21);
             double multiplicador = vitoriaPor21 ? 2.5 : 2.0;
             int premio = (int) (valorAposta * multiplicador);
-            novoSaldo += premio;
+            saldo += premio;
             valorGame = premio;
 
             // Atualiza no banco de dados
             DatabaseOperations.executeUpdate(
                 "UPDATE usuarios SET money = ? WHERE id = ?",
-                new String[]{String.valueOf(novoSaldo), userId}
+                new String[]{String.valueOf(saldo), userId}
             );
 
             resultado = vitoriaPor21 ? "Blackjack! Você venceu com 21!" : "Você venceu!";
@@ -148,11 +170,11 @@ public class Game {
             resultado = "Bot venceu!";
         } else {
             resultado = "Empate!";
-            novoSaldo += valorAposta; // Empate: devolve aposta?
+            saldo += valorAposta; // Empate: devolve aposta?
             
             DatabaseOperations.executeUpdate(
                 "UPDATE usuarios SET money = ? WHERE id = ?",
-                new String[]{String.valueOf(novoSaldo), userId}
+                new String[]{String.valueOf(saldo), userId}
             );
         }
 
@@ -168,7 +190,9 @@ public class Game {
                 "Você: " + totalJogador + " | Bot: " + totalBot + "\n" + resultado,
                 "Resultado", JOptionPane.INFORMATION_MESSAGE);
         
-        frame.restart(novoSaldo);
+        cartasBot.clear();
+        cartasJogador.clear();
+        frame.restart();
     }
 
     public static int somar(List<String[]> cartas) {
@@ -223,5 +247,9 @@ public class Game {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    public int getSaldo() {
+        return saldo;
     }
 }

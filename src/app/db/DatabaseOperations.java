@@ -13,6 +13,7 @@ public class DatabaseOperations {
         try {
             conn = DatabaseConnection.getConnection();
             ps   = conn.prepareStatement(sql);
+            
             for (int i = 0; i < params.length; i++) {
                 ps.setString(i + 1, params[i]);
             }
@@ -31,6 +32,7 @@ public class DatabaseOperations {
         try {
             conn = DatabaseConnection.getConnection();
             ps   = conn.prepareStatement(sql);
+
             for (int i = 0; i < params.length; i++) {
                 ps.setString(i + 1, params[i]);
             }
