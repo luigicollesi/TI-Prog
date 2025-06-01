@@ -19,7 +19,7 @@ public class DetalheFrame extends JDialog {
     private final HistoricoFrame historicoFrame;
 
     public DetalheFrame(HistoricoFrame parent) {
-        setTitle("Detalhes da Partida");
+        super(parent, "Detalhes da Partida", true);
         setSize(800, 610);
         setLayout(null);
 
