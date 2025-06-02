@@ -1,70 +1,69 @@
-# TI-Prog
+# 🃏 TI-Prog – Blackjack Underground
 
-**TI-Prog** é uma aplicação Java desktop que implementa o jogo de Blackjack com temática “Underground”. O projeto inclui:
+TI-Prog é um jogo de **Blackjack** desenvolvido em Java, com interface gráfica personalizada utilizando **Java Swing** e persistência local com **MySQL**.
 
-- Tela de login/autenticação de usuário (Swing + MySQL).  
-- Lógica completa de jogo de Blackjack (baralho, apostas, turnos do jogador e do “bot”).  
-- Registro do histórico de partidas no banco de dados MySQL.  
-- Interface gráfica (Java Swing) com elementos visuais personalizados e diálogos customizados.  
+O jogo possui visual temático *underground*, com cartas, bot, apostas e histórico de partidas salvos no banco de dados.
 
----
+## 📁 Estrutura do Projeto
 
-## Índice
+- `src/`: Código-fonte Java.
+- `public/Images/`: Imagens do jogo (fundo, cartas, ícones).
+- `TI-Prog.jar`: Arquivo executável Java.
+- `BancoDados.sql`: Script SQL com a estrutura do banco de dados.
+- `README.md`: Este arquivo.
 
-1. [Visão Geral](#visão-geral)  
-2. [Pré-requisitos](#pré-requisitos)  
-3. [Instalação e Configuração](#instalação-e-configuração)  
-4. [Como Rodar](#como-rodar)  
-5. [Estrutura do Projeto](#estrutura-do-projeto)  
-6. [Funcionalidades Principais](#funcionalidades-principais)  
-7. [Como Jogar](#como-jogar)  
-8. [Personalização Visual](#personalização-visual)  
-9. [Banco de Dados](#banco-de-dados)  
-10. [Gerar Executável (.exe)](#gerar-executável-exe)  
-11. [Contribuição](#contribuição)  
-12. [Licença](#licença)  
+## ✅ Requisitos
 
----
+Antes de rodar o projeto, instale:
 
-## Visão Geral
+- Java 17 ou superior
+- MySQL Server
+- Linux (ou outro sistema com terminal e Java)
 
-Este projeto — **TI-Prog** — foi desenvolvido como parte do Trabalho de Conclusão de Curso em TI (ou disciplina equivalente). O objetivo principal é:
+## ⬇️ Como Clonar o Projeto
 
-- Oferecer uma experiência de Blackjack com interface Swing adequada para desktop.  
-- Permitir que vários usuários criem contas, façam login e joguem, mantendo histórico de cada partida.  
-- Demonstrar integração Java ↔ MySQL (JDBC) para persistência de dados (usuários, histórico de partidas, resultados).  
+Abra o terminal e execute:
 
-A estética “Underground” foi aplicada em ícones, imagens de fundo e estilos de botões, para criar uma atmosfera diferenciada.
+```bash
+git clone https://github.com/luigicollesi/TI-Prog.git
+cd TI-Prog
+```
 
----
+## 🗃️ Como Criar e Configurar o Banco de Dados MySQL
 
-## Pré-requisitos
+A aplicação utiliza MySQL como banco de dados. Para criar e configurar:
 
-Antes de iniciar, certifique-se de ter os seguintes itens instalados:
+1. Acesse seu MySQL com um usuário com permissões de criação:
 
-1. **Java Development Kit (JDK 17 ou superior)**  
-   - Variável de ambiente `JAVA_HOME` apontando para a instalação do JDK.  
-   - `javac` e `java` disponíveis no `PATH`.
+```bash
+mysql -u root -p
+```
 
-2. **MySQL Server (8.x ou superior)**  
-   - Conta de acesso com permissão para criar esquema e tabelas.  
-   - Cliente MySQL (ou Workbench) para executar scripts de criação e importação do dump.
+2. Crie o banco de dados:
 
-3. **Biblioteca JDBC do MySQL**  
-   - O driver [`mysql-connector-java`](https://dev.mysql.com/downloads/connector/j/) deve estar disponível no _classpath_ (geralmente incluído via Maven/Gradle ou colocando o `.jar` em `lib/`).
+```sql
+CREATE DATABASE tiprog;
+USE tiprog;
+```
 
-4. **Ferramenta de Build (opcional, mas recomendada)**  
-   - Maven (ou Gradle) para compilar, gerar `.jar` e resolver dependências.  
-   - Se não usar Maven/Gradle, bastarão os utilitários `javac` e `jar`.
+3. Importe o script SQL:
 
-5. **Cliente SQLite (opcional)**  
-   - Caso prefira rodar uma versão SQLite, basta ter um cliente SQLite (DB Browser for SQLite, DBeaver, SQLiteStudio etc.).
+```bash
+mysql -u root -p tiprog < BancoDados.sql
+```
 
----
+4. Atualize as configurações de conexão no código, se necessário (usuário, senha, host).
 
-## Instalação e Configuração
+## ▶️ Como Executar o Jogo no Linux
 
-1. **Clonar o repositório**  
-   ```bash
-   git clone https://github.com/luigicollesi/TI-Prog.git
-   cd TI-Prog
+Com o banco de dados configurado corretamente, execute:
+
+```bash
+java -jar TI-Prog.jar
+```
+
+A aplicação será iniciada com a interface de login e integrará com o banco MySQL.
+
+## 📜 Licença
+
+Distribuído sob a Licença MIT. Consulte o arquivo `LICENSE` para mais informações.
