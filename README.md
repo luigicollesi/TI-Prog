@@ -33,16 +33,17 @@ cd TI-Prog
 
 A aplicação utiliza MySQL como banco de dados. Para criar e configurar:
 
-1. Acesse seu MySQL com um usuário com permissões de criação:
+1. Importe o script SQL no linux:
 
 ```bash
-mysql -u root -p
+mysql -u root -p < BancoDados.sql
 ```
 
-2. Importe o script SQL:
+2. Importe o script SQL no powerShell Windows:
 
 ```bash
-mysql -u root -p tiprog < BancoDados.sql
+Get-Content .\BancoDados.sql | 
+  & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p
 ```
 
 4. Atualize as configurações de conexão no código, se necessário (usuário, senha, host).
