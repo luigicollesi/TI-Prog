@@ -1,0 +1,17 @@
+src/app/ui/Auth/LoginFrame.java
+src/app/ui/Auth/CreateAccountFrame.java
+src/app/ui/Private/GameFrame.java
+src/app/ui/Private/DetalheFrame.java
+src/app/ui/Private/HistoricoFrame.java
+src/app/ui/Private/MenuFrame.java
+src/app/ui/utility/PanelImage.java
+src/app/ui/utility/OutlineLabel.java
+src/app/ui/utility/RoundTextF.java
+src/app/ui/utility/RoundPassF.java
+src/app/ui/utility/RoundButton.java
+src/app/ui/utility/CustomDialog.java
+src/app/game/Game.java
+src/app/game/Bot.java
+src/app/db/DatabaseConnection.java
+src/app/db/DatabaseOperations.java
+src/app/AppMain.java
