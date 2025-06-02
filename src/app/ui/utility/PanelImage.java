@@ -1,9 +1,10 @@
 package app.ui.utility;
 
 import java.awt.*;
+import javax.swing.*;
 
-public class PanelImage extends javax.swing.JPanel {
-    private final java.awt.Image image;
+public class PanelImage extends JPanel {
+    private final Image image;
     private final boolean isDark;
 
     public PanelImage(Image image, boolean isDark) {

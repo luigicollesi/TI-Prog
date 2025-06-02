@@ -130,6 +130,7 @@ public class GameFrame extends JFrame {
         btnManter.setPreferredSize(new Dimension(200, 60));
         btnManter.addActionListener(e -> manterCartas());
 
+        
         // --- Cria os botões de aposta apenas uma vez ---
         btnReset = new RoundButton("Reset", Color.BLACK);
         btnReset.setPreferredSize(new Dimension(120, 60));

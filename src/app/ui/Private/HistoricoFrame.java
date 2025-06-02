@@ -39,33 +39,6 @@ public class HistoricoFrame extends JFrame {
         centerPanel.setOpaque(false);
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        try {
-            ResultSet rs = DatabaseOperations.executeQuery(
-                "SELECT * FROM historico_partidas WHERE user_id = ? ORDER BY created_at DESC;",
-                new String[]{userId}
-            );
-
-            while (rs != null && rs.next()) {
-                boolean venceu = rs.getInt("venceu") == 1;
-                int valor = rs.getInt("valor");
-                String cartasPlayer = rs.getString("cartas_player");
-                String cartasBot = rs.getString("cartas_bot");
-
-                String texto = (venceu ? "Ganhou  +" : "Perdeu  -") + "$" + valor;
-                JButton btn = new RoundButton(texto, venceu ? new Color(0, 190, 0) : new Color(220, 50, 50));
-                btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-                btn.setMaximumSize(new Dimension(250, 60));
-                btn.addActionListener(e -> detalheFrame.mostrar(cartasPlayer, cartasBot));
-
-                centerPanel.add(btn);
-                centerPanel.add(Box.createVerticalStrut(15));
-            }
-
-            if (rs != null) rs.getStatement().getConnection().close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         scrollPane = new JScrollPane(centerPanel);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);

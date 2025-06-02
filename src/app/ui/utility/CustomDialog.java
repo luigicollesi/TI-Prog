@@ -55,7 +55,7 @@ public class CustomDialog {
             messageBox.add(iconLabel);
         }
 
-        JLabel lblMsg = new JLabel("<html><div style='text-align: center;'>" + message + "</div></html>", SwingConstants.CENTER);
+        JLabel lblMsg = new JLabel(message, SwingConstants.CENTER);
         lblMsg.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblMsg.setFont(new Font("Arial", Font.BOLD, 22));
         lblMsg.setForeground(Color.WHITE);

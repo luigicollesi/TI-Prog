@@ -139,7 +139,6 @@ public class Game {
         // Revela cartas do bot
         for (String[] carta : cartasBot) {
             frame.cartasBot(carta, true);
-            esperar(500);
         }
 
         int totalBot = somar(cartasBot);
@@ -165,7 +164,7 @@ public class Game {
                 new String[]{String.valueOf(saldo), userId}
             );
 
-            resultado = vitoriaPor21 ? "Blackjack! Você venceu com 21!" : "Você venceu!";
+            resultado = vitoriaPor21 ? " Blackjack!" : " Você venceu!";
         } else if (totalBot > totalJogador) {
             resultado = "Bot venceu!";
         } else {
@@ -227,12 +226,6 @@ public class Game {
         }
 
         return soma;
-    }
-
-    private void esperar(int ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException ignored) {}
     }
 
     private String converterCartasParaJson(List<String[]> cartas) {

@@ -19,8 +19,11 @@ public class RoundButton extends JButton {
 
     @Override
     protected void paintComponent(Graphics g) {
+        
         Graphics2D g2 = (Graphics2D) g.create();
+        
         boolean hover = getModel().isRollover();
+
         Color backgroundColor = hover
             ? new Color(255, 255, 255, 250) // Hover
             : new Color(255, 255, 255, 200); // Normal
