@@ -75,7 +75,7 @@ public class Game {
     }
 
     private void executarSequencia() {
-        SwingWorker<Void, Runnable> worker = new SwingWorker<>() {
+        SwingWorker<Void, Runnable> worker = new SwingWorker<Void, Runnable>() {
             @Override
             protected Void doInBackground() throws Exception {
                 // Bot recebe primeira carta visível
