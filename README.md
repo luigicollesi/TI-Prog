@@ -39,14 +39,7 @@ A aplicação utiliza MySQL como banco de dados. Para criar e configurar:
 mysql -u root -p
 ```
 
-2. Crie o banco de dados:
-
-```sql
-CREATE DATABASE tiprog;
-USE tiprog;
-```
-
-3. Importe o script SQL:
+2. Importe o script SQL:
 
 ```bash
 mysql -u root -p tiprog < BancoDados.sql
