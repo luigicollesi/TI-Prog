@@ -48,6 +48,8 @@ Get-Content .\BancoDados.sql |
 
 4. Atualize as configurações de conexão no código, se necessário (usuário, senha, host).
 
+Acesse o arquivo `src/app/db/DatabaseConnection.java` e mude os atributos finais de acordo.
+
 ## ▶️ Como Executar o Jogo no Linux
 
 Com o banco de dados configurado corretamente, execute:
