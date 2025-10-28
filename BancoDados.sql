@@ -39,7 +39,7 @@ CREATE TABLE `historico_partidas` (
   `cartas_player` json NOT NULL,
   `cartas_bot` json NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `venceu` tinyint(1) NOT NULL,
+  `venceu` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `historico_partidas_ibfk_1` (`user_id`),
   CONSTRAINT `historico_partidas_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
