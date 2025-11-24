@@ -235,9 +235,6 @@ public class MenuFrame extends JFrame implements ServerListener {
 
     private void applyTranslations(String username) {
         setTitle(I18n.get("menu.title"));
-        JPanel centerPanel = (JPanel) ((BorderLayout) getContentPane().getLayout()).getLayoutComponent(BorderLayout.CENTER);
-        JPanel messageWrapper = (JPanel) centerPanel.getComponent(1);
-        JPanel messageBox = (JPanel) messageWrapper.getComponent(0);
         lblPerfil.setText(I18n.get("menu.message", username));
 
         btnJogar.setText(I18n.get("menu.play"));

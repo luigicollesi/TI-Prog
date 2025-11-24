@@ -6,18 +6,18 @@ import java.util.ResourceBundle;
 
 public final class I18n {
     public enum Lang {
-        PT_BR("Português", new Locale("pt", "BR")),
-        EN_US("English", new Locale("en", "US")),
-        ES_ES("Español", new Locale("es", "ES")),
-        FR_FR("Français", new Locale("fr", "FR")),
-        DE_DE("Deutsch", new Locale("de", "DE"));
+        PT_BR("Português", "pt-BR"),
+        EN_US("English", "en-US"),
+        ES_ES("Español", "es-ES"),
+        FR_FR("Français", "fr-FR"),
+        DE_DE("Deutsch", "de-DE");
 
         private final String label;
         private final Locale locale;
 
-        Lang(String label, Locale locale) {
+        Lang(String label, String tag) {
             this.label = label;
-            this.locale = locale;
+            this.locale = Locale.forLanguageTag(tag);
         }
 
         public Locale locale() {

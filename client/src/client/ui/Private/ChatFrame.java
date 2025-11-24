@@ -30,13 +30,11 @@ public class ChatFrame extends JDialog {
     private final SimpleAttributeSet nameStyle = new SimpleAttributeSet();
     private final SimpleAttributeSet messageStyle = new SimpleAttributeSet();
 
-    private final String username;
     private final Path historyFile;
     private final Consumer<String> sender;
 
     public ChatFrame(JFrame owner, String username, Consumer<String> sender) {
         super(owner, I18n.get("chat.title"), false);
-        this.username = username;
         this.sender = sender;
 
         StyleConstants.setBold(nameStyle, true);

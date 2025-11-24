@@ -1,13 +1,8 @@
 package client.ui.Private;
 
-import client.model.CardView;
-import client.model.DealSequence;
-import client.model.PlayerView;
-import client.model.TableStage;
-import client.model.TableState;
+import client.model.*;
 import client.net.ServerConnection;
 import client.net.ServerListener;
-import client.ui.Private.ChatFrame;
 import client.i18n.I18n;
 import client.ui.utility.CustomDialog;
 import client.ui.utility.PanelImage;
