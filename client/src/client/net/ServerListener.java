@@ -34,4 +34,6 @@ public interface ServerListener {
     default void onAccountDeleted() {}
 
     default void onConnectionClosed() {}
+
+    default void onChatMessage(String username, String message) {}
 }

@@ -4,7 +4,7 @@ import server.net.BlackjackServer;
 
 public class ServerMain {
     public static void main(String[] args) {
-        int port = 5555;
+        int port = 4000;
         if (args.length > 0) {
             try {
                 port = Integer.parseInt(args[0]);

@@ -7,6 +7,8 @@ import client.model.TableStage;
 import client.model.TableState;
 import client.net.ServerConnection;
 import client.net.ServerListener;
+import client.ui.Private.ChatFrame;
+import client.i18n.I18n;
 import client.ui.utility.CustomDialog;
 import client.ui.utility.PanelImage;
 import client.ui.utility.RoundButton;
@@ -51,6 +53,7 @@ public class GameFrame extends JFrame implements ServerListener {
     final JPanel bettingPanel;
     final JPanel actionPanel;
 
+    final RoundButton btnChat;
     final RoundButton btnReset;
     final RoundButton btnAposta5;
     final RoundButton btnAposta10;
@@ -59,6 +62,7 @@ public class GameFrame extends JFrame implements ServerListener {
     final RoundButton btnFinalizarAposta;
     final RoundButton btnComprar;
     final RoundButton btnManter;
+    final RoundButton btnVoltar;
 
     private static final Border INACTIVE_PLAYER_BORDER = BorderFactory.createEmptyBorder(10, 10, 10, 10);
     private static final Border ACTIVE_PLAYER_BORDER =
@@ -82,6 +86,7 @@ public class GameFrame extends JFrame implements ServerListener {
     private final ImageIcon backgroundImage = new ImageIcon("public/Images/GameFundo.png");
 
     private boolean awaitingRoundResultDisplay;
+    private final ChatFrame chatFrame;
 
     public GameFrame(MenuFrame parent, ServerConnection connection, String userId, String username, int balance) {
         this.connection = connection;
@@ -92,8 +97,9 @@ public class GameFrame extends JFrame implements ServerListener {
         this.connection.addListener(this);
 
         awaitingRoundResultDisplay = false;
+        chatFrame = new ChatFrame(this, username, connection::sendChat);
 
-        setTitle("Blackjack - Mesa");
+        setTitle(I18n.get("game.title"));
         setSize(1280, 780);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -105,30 +111,40 @@ public class GameFrame extends JFrame implements ServerListener {
         JPanel header = new JPanel(new BorderLayout());
         header.setOpaque(false);
 
-        lblSaldo = new JLabel("Saldo: $" + balance, SwingConstants.LEFT);
+        lblSaldo = new JLabel(I18n.get("game.saldo", balance), SwingConstants.LEFT);
         lblSaldo.setFont(new Font("Arial", Font.BOLD, 28));
         lblSaldo.setForeground(Color.WHITE);
         header.add(lblSaldo, BorderLayout.WEST);
 
-        lblStage = new JLabel("Aguardando mesa...", SwingConstants.CENTER);
+        lblStage = new JLabel(I18n.get("game.waiting"), SwingConstants.CENTER);
         lblStage.setFont(new Font("Arial", Font.BOLD, 24));
         lblStage.setForeground(Color.WHITE);
         header.add(lblStage, BorderLayout.CENTER);
 
-        JButton btnVoltar = new RoundButton("Voltar", Color.BLACK);
+        btnVoltar = new RoundButton(I18n.get("game.btn.back"), Color.BLACK);
         btnVoltar.setPreferredSize(new Dimension(150, 50));
         btnVoltar.addActionListener(e -> {
+            connection.leaveTable();
             setVisible(false);
             menuFrame.open(this);
         });
-        header.add(btnVoltar, BorderLayout.EAST);
+        JPanel headerButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        headerButtons.setOpaque(false);
+
+        btnChat = new RoundButton(I18n.get("game.btn.chat"), Color.BLACK);
+        btnChat.setPreferredSize(new Dimension(140, 50));
+        btnChat.addActionListener(e -> toggleChat());
+
+        headerButtons.add(btnChat);
+        headerButtons.add(btnVoltar);
+        header.add(headerButtons, BorderLayout.EAST);
         backgroundPanel.add(header, BorderLayout.NORTH);
 
         JPanel center = new JPanel();
         center.setOpaque(false);
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
 
-        JLabel lblDealerTitle = new JLabel("Dealer", SwingConstants.CENTER);
+        JLabel lblDealerTitle = new JLabel(I18n.get("game.dealer"), SwingConstants.CENTER);
         lblDealerTitle.setFont(new Font("Arial", Font.BOLD, 28));
         lblDealerTitle.setForeground(Color.WHITE);
         lblDealerTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -175,7 +191,7 @@ public class GameFrame extends JFrame implements ServerListener {
         controlsWrapper.setOpaque(false);
         controlsWrapper.setLayout(new BoxLayout(controlsWrapper, BoxLayout.Y_AXIS));
 
-        lblAposta = new JLabel("Aposta atual: $0", SwingConstants.CENTER);
+        lblAposta = new JLabel(I18n.get("game.bet.current", 0), SwingConstants.CENTER);
         lblAposta.setFont(new Font("Arial", Font.BOLD, 22));
         lblAposta.setForeground(Color.WHITE);
         lblAposta.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -189,7 +205,7 @@ public class GameFrame extends JFrame implements ServerListener {
         bettingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         bettingPanel.setOpaque(false);
 
-        btnReset = createBetButton("Reset", 0);
+        btnReset = createBetButton(I18n.get("game.btn.reset"), 0);
         btnReset.addActionListener(e -> {
             apostaAtual = 0;
             updateBetLabel();
@@ -206,7 +222,7 @@ public class GameFrame extends JFrame implements ServerListener {
         bettingPanel.add(btnAposta25);
         bettingPanel.add(btnAposta50);
 
-        btnFinalizarAposta = new RoundButton("Enviar Aposta", Color.BLACK);
+        btnFinalizarAposta = new RoundButton(I18n.get("game.btn.sendbet"), Color.BLACK);
         btnFinalizarAposta.setPreferredSize(new Dimension(220, 55));
         btnFinalizarAposta.addActionListener(e -> enviarAposta());
         bettingPanel.add(btnFinalizarAposta);
@@ -214,10 +230,10 @@ public class GameFrame extends JFrame implements ServerListener {
         actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
         actionPanel.setOpaque(false);
 
-        btnComprar = new RoundButton("Comprar", Color.BLACK);
+        btnComprar = new RoundButton(I18n.get("game.btn.buy"), Color.BLACK);
         btnComprar.setPreferredSize(new Dimension(220, 60));
 
-        btnManter = new RoundButton("Manter", Color.BLACK);
+        btnManter = new RoundButton(I18n.get("game.btn.stand"), Color.BLACK);
         btnManter.setPreferredSize(new Dimension(220, 60));
         btnManter.addActionListener(e -> {
             connection.sendAction("STAND");
@@ -262,7 +278,7 @@ public class GameFrame extends JFrame implements ServerListener {
 
     public void updateBalance(int balance) {
         currentBalance = balance;
-        lblSaldo.setText("Saldo: $" + balance);
+        lblSaldo.setText(I18n.get("game.saldo", balance));
     }
 
     private void adicionarAposta(int valor) {
@@ -273,13 +289,13 @@ public class GameFrame extends JFrame implements ServerListener {
             apostaAtual += valor;
             updateBetLabel();
         } else {
-            CustomDialog.showMessage(this, "Saldo insuficiente.", "Erro", JOptionPane.ERROR_MESSAGE);
+            CustomDialog.showMessage(this, I18n.get("game.err.balance"), I18n.get("dialog.error"), JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void enviarAposta() {
         if (apostaAtual == 0) {
-            CustomDialog.showMessage(this, "Sem aposta, sem jogo!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            CustomDialog.showMessage(this, I18n.get("game.err.nobet"), I18n.get("dialog.warning"), JOptionPane.WARNING_MESSAGE);
             return;
         }
         connection.placeBet(apostaAtual);
@@ -288,13 +304,13 @@ public class GameFrame extends JFrame implements ServerListener {
     }
 
     private void updateBetLabel() {
-        lblAposta.setText("Aposta atual: $" + apostaAtual);
+        lblAposta.setText(I18n.get("game.bet.current", apostaAtual));
     }
 
     @Override
     public void onJoinAcknowledged(String tableId, int balance) {
         updateBalance(balance);
-        lblStage.setText("Aguardando apostas...");
+        lblStage.setText(I18n.get("game.bet.phase"));
         apostaEnviada = false;
         resetBetUI();
         setControlsForStage(TableStage.BETTING);
@@ -453,20 +469,23 @@ public class GameFrame extends JFrame implements ServerListener {
     }
 
     String stageMessage(TableStage stage, TableState state) {
+        if (stage == null) {
+            return I18n.get("game.waiting");
+        }
         return switch (stage) {
-            case BETTING -> "Fase de apostas";
+            case BETTING -> I18n.get("game.bet.phase");
             case PLAYING -> {
-                if (state.getCurrentTurnUserId() == null) {
-                    yield "Distribuindo cartas...";
+                if (state == null || state.getCurrentTurnUserId() == null) {
+                    yield I18n.get("game.playing.running");
                 }
                 PlayerArea area = findArea(state.getCurrentTurnUserId());
                 if (area != null) {
-                    yield "Vez de " + area.getDisplayName();
+                    yield I18n.get("game.playing.turn", area.getDisplayName());
                 }
-                yield "Rodada em andamento";
+                yield I18n.get("game.playing.running");
             }
-            case RESULTS -> "Exibindo resultados";
-            case WAITING -> "Aguardando jogadores";
+            case RESULTS -> I18n.get("game.results");
+            case WAITING -> I18n.get("game.wait.players");
         };
     }
 
@@ -554,7 +573,7 @@ public class GameFrame extends JFrame implements ServerListener {
             updateBalance(balance);
         }
         if (message != null && !message.isBlank() && isVisible()) {
-            CustomDialog.showMessage(this, message, "Resultado", JOptionPane.INFORMATION_MESSAGE);
+            CustomDialog.showMessage(this, message, I18n.get("game.result.title"), JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -629,32 +648,50 @@ public class GameFrame extends JFrame implements ServerListener {
 
     @Override
     public void onErrorMessage(String message) {
-        CustomDialog.showMessage(this, message, "Erro", JOptionPane.ERROR_MESSAGE);
+        CustomDialog.showMessage(this, message, I18n.get("dialog.error"), JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
     public void onInfoMessage(String message) {
         if (message != null && !message.isBlank()) {
-            CustomDialog.showMessage(this, message, "Informação", JOptionPane.INFORMATION_MESSAGE);
+            CustomDialog.showMessage(this, message, I18n.get("dialog.info"), JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    @Override
+    public void onChatMessage(String fromUsername, String message) {
+        if (fromUsername == null || message == null) {
+            return;
+        }
+        chatFrame.addIncomingMessage(fromUsername, message);
     }
 
     @Override
     public void onLogout() {
         resetTable();
         setVisible(false);
+        chatFrame.deleteHistoryFile();
+        chatFrame.setVisible(false);
         menuFrame.open(this);
     }
 
     @Override
+    public void onAccountDeleted() {
+        chatFrame.deleteHistoryFile();
+    }
+
+    @Override
     public void onConnectionClosed() {
-        JOptionPane.showMessageDialog(this, "Conexão com o servidor encerrada.", "Erro", JOptionPane.ERROR_MESSAGE);
+        chatFrame.deleteHistoryFile();
+        JOptionPane.showMessageDialog(this, I18n.get("game.connection.closed"), "Erro", JOptionPane.ERROR_MESSAGE);
         System.exit(0);
     }
 
     @Override
     public void dispose() {
         connection.removeListener(this);
+        chatFrame.deleteHistoryFile();
+        chatFrame.dispose();
         super.dispose();
     }
 
@@ -727,6 +764,29 @@ public class GameFrame extends JFrame implements ServerListener {
                 comp.setBounds(x, top, CARD_WIDTH, CARD_HEIGHT);
             }
         }
+    }
+
+    private void toggleChat() {
+        if (chatFrame.isVisible()) {
+            chatFrame.setVisible(false);
+        } else {
+            chatFrame.setLocationRelativeTo(this);
+            chatFrame.setVisible(true);
+        }
+    }
+
+    void applyTranslations() {
+        setTitle(I18n.get("game.title"));
+        lblSaldo.setText(I18n.get("game.saldo", currentBalance));
+        lblStage.setText(stageMessage(lastStage, null));
+        btnChat.setText(I18n.get("game.btn.chat"));
+        btnReset.setText(I18n.get("game.btn.reset"));
+        btnFinalizarAposta.setText(I18n.get("game.btn.sendbet"));
+        btnComprar.setText(I18n.get("game.btn.buy"));
+        btnManter.setText(I18n.get("game.btn.stand"));
+        btnVoltar.setText(I18n.get("game.btn.back"));
+        updateBetLabel();
+        chatFrame.applyTranslations();
     }
 
     private class PlayerArea {

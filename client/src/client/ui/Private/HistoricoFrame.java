@@ -3,6 +3,7 @@ package client.ui.Private;
 import client.model.HistoryEntryModel;
 import client.net.ServerConnection;
 import client.net.ServerListener;
+import client.i18n.I18n;
 import client.ui.utility.PanelImage;
 import client.ui.utility.RoundButton;
 
@@ -30,7 +31,7 @@ public class HistoricoFrame extends JFrame implements ServerListener {
 
         detalheFrame = new DetalheFrame(this);
 
-        setTitle("Histórico de Partidas");
+        setTitle(I18n.get("history.title"));
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -53,7 +54,7 @@ public class HistoricoFrame extends JFrame implements ServerListener {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         bottomPanel.setOpaque(false);
 
-        btnVoltar = new RoundButton("Voltar", Color.BLACK);
+        btnVoltar = new RoundButton(I18n.get("history.back"), Color.BLACK);
         btnVoltar.setPreferredSize(new Dimension(250, 60));
         btnVoltar.addActionListener(e -> {
             detalheFrame.dispose();
@@ -68,8 +69,15 @@ public class HistoricoFrame extends JFrame implements ServerListener {
     }
 
     public void open() {
+        setTitle(I18n.get("history.title"));
+        btnVoltar.setText(I18n.get("history.back"));
         centerPanel.removeAll();
-        centerPanel.add(new javax.swing.JLabel("Carregando histórico..."));
+        JLabel loading = new JLabel(I18n.get("history.loading"));
+        loading.setForeground(Color.WHITE);
+        loading.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(Box.createVerticalGlue());
+        centerPanel.add(loading);
+        centerPanel.add(Box.createVerticalGlue());
         centerPanel.revalidate();
         centerPanel.repaint();
 
@@ -91,7 +99,8 @@ public class HistoricoFrame extends JFrame implements ServerListener {
         centerPanel.removeAll();
 
         if (entries.isEmpty()) {
-            javax.swing.JLabel empty = new javax.swing.JLabel("Nenhum histórico encontrado.");
+            javax.swing.JLabel empty = new javax.swing.JLabel(I18n.get("history.empty"));
+            empty.setFont(new Font("Arial", Font.BOLD, 26));
             empty.setForeground(Color.WHITE);
             empty.setAlignmentX(Component.CENTER_ALIGNMENT);
             centerPanel.add(Box.createVerticalGlue());
@@ -106,13 +115,13 @@ public class HistoricoFrame extends JFrame implements ServerListener {
                 JButton btn;
 
                 if (Boolean.TRUE.equals(resultado)) {
-                    texto = "Ganhou  +$" + valor;
+                    texto = I18n.get("history.won", valor);
                     btn = new RoundButton(texto, new Color(0, 190, 0));
                 } else if (Boolean.FALSE.equals(resultado)) {
-                    texto = "Perdeu  -$" + valor;
+                    texto = I18n.get("history.lost", valor);
                     btn = new RoundButton(texto, new Color(220, 50, 50));
                 } else {
-                    texto = "Empate  $" + valor;
+                    texto = I18n.get("history.draw", valor);
                     Color textColor = new Color(215, 215, 215);
                     Color normalBg = new Color(70, 70, 70, 220);
                     Color hoverBg = new Color(98, 98, 98, 240);
@@ -143,5 +152,10 @@ public class HistoricoFrame extends JFrame implements ServerListener {
     public void dispose() {
         connection.removeListener(this);
         super.dispose();
+    }
+
+    public void applyTranslations() {
+        setTitle(I18n.get("history.title"));
+        btnVoltar.setText(I18n.get("history.back"));
     }
 }

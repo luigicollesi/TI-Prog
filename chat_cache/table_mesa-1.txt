@@ -1,0 +1,18 @@
+aa
+Oi
+
+DealerBot
+Oi! Posso falar sobre apostas, comprar ou manter.
+
+aa
+devo comprar agora
+
+DealerBot
+Estou aqui! Use palavras como 'dica', 'aposta' ou 'ajuda'.
+
+aa
+dica
+
+DealerBot
+Lembre-se: parar perto de 21 sem estourar é o melhor caminho.
+

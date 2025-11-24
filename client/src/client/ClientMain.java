@@ -9,7 +9,7 @@ import java.io.IOException;
 public class ClientMain {
     public static void main(String[] args) {
         String host = args.length > 0 ? args[0] : "127.0.0.1";
-        int port = 5555;
+        int port = 4000;
         if (args.length > 1) {
             try {
                 port = Integer.parseInt(args[1]);

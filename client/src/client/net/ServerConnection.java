@@ -70,6 +70,11 @@ public class ServerConnection {
         sendCommand("ACTION;" + action);
     }
 
+    public void sendChat(String message) {
+        String clean = message == null ? "" : message.replace(";", ",").replaceAll("\\r?\\n", " ");
+        sendCommand("CHAT;" + clean);
+    }
+
     public void requestHistory() {
         sendCommand("HISTORY");
     }
@@ -80,6 +85,10 @@ public class ServerConnection {
 
     public void deleteAccount() {
         sendCommand("DELETE_ACCOUNT");
+    }
+
+    public void leaveTable() {
+        sendCommand("LEAVE_TABLE");
     }
 
     public String getUserId() {
@@ -172,6 +181,12 @@ public class ServerConnection {
                 break;
             case "ACCOUNT_DELETE_FAIL":
                 notifyError(parts.length > 1 ? parts[1] : "Falha ao excluir conta.");
+                break;
+            case "CHAT_MSG":
+                notifyChatMessage(parts);
+                break;
+            case "LEFT_TABLE":
+                notifyInfo(client.i18n.I18n.get("chat.left.table"));
                 break;
             default:
                 notifyInfo("Recebido: " + line);
@@ -288,6 +303,15 @@ public class ServerConnection {
         historyBuffer.clear();
         bufferingHistory = false;
         runOnUi(() -> listeners.forEach(ServerListener::onAccountDeleted));
+    }
+
+    private void notifyChatMessage(String[] parts) {
+        if (parts.length < 3) {
+            return;
+        }
+        String fromUser = parts[1];
+        String msg = parts[2];
+        runOnUi(() -> listeners.forEach(l -> l.onChatMessage(fromUser, msg)));
     }
 
     private void notifyConnectionClosed() {

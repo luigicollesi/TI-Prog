@@ -3,6 +3,8 @@ package client.ui.Private;
 import client.net.ServerConnection;
 import client.net.ServerListener;
 import client.ui.Auth.LoginFrame;
+import client.i18n.I18n;
+import client.i18n.I18n.Lang;
 import client.ui.utility.CustomDialog;
 import client.ui.utility.PanelImage;
 import client.ui.utility.RoundButton;
@@ -20,8 +22,14 @@ public class MenuFrame extends JFrame implements ServerListener {
     private final ImageIcon backgroundImage = new ImageIcon("public/Images/Fundo.png");
 
     private final RoundButton btnExcluirConta;
+    private final RoundButton btnJogar;
+    private final RoundButton btnHistorico;
+    private final RoundButton btnDeslogar;
+    private final RoundButton btnSair;
+    private final JLabel lblPerfil;
     private boolean awaitingAccountDeletion = false;
     private boolean accountDeleted = false;
+    private final JComboBox<Lang> languageSelector;
 
     public MenuFrame(LoginFrame parent, ServerConnection connection, String userId, String username, int balance) {
         this.connection = connection;
@@ -31,7 +39,17 @@ public class MenuFrame extends JFrame implements ServerListener {
         gameFrame = new GameFrame(this, connection, userId, username, balance);
         historicoFrame = new HistoricoFrame(this, connection, userId);
 
-        setTitle("Blackjack - Menu");
+        languageSelector = new JComboBox<>(Lang.values());
+        languageSelector.setFont(new Font("Arial", Font.BOLD, 24));
+        languageSelector.setSelectedItem(I18n.getLanguage());
+        languageSelector.addActionListener(e -> {
+            I18n.setLanguage((Lang) languageSelector.getSelectedItem());
+            applyTranslations(username);
+            gameFrame.applyTranslations();
+            historicoFrame.applyTranslations();
+        });
+
+        setTitle(I18n.get("menu.title"));
         setSize(1000, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -42,6 +60,12 @@ public class MenuFrame extends JFrame implements ServerListener {
 
         PanelImage backgroundPanel = new PanelImage(backgroundImage.getImage(), true);
         backgroundPanel.setLayout(new BorderLayout());
+
+        JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        topBar.setOpaque(false);
+        languageSelector.setPreferredSize(new Dimension(220, 60));
+        topBar.add(languageSelector);
+        backgroundPanel.add(topBar, BorderLayout.NORTH);
 
         JPanel centerPanel = new JPanel();
         centerPanel.setOpaque(false);
@@ -58,7 +82,7 @@ public class MenuFrame extends JFrame implements ServerListener {
         messageBox.setBorder(BorderFactory.createEmptyBorder(18, 28, 18, 28));
         messageBox.setLayout(new BoxLayout(messageBox, BoxLayout.Y_AXIS));
 
-        JLabel lblPerfil = new JLabel("Don " + username + ", a mesa aguarda suas ordens.");
+        lblPerfil = new JLabel(I18n.get("menu.message", username));
         lblPerfil.setFont(new Font("Serif", Font.BOLD, 34));
         lblPerfil.setForeground(new Color(230, 230, 230));
         lblPerfil.setHorizontalAlignment(SwingConstants.CENTER);
@@ -67,7 +91,7 @@ public class MenuFrame extends JFrame implements ServerListener {
 
         messageWrapper.add(messageBox);
 
-        JButton btnJogar = new RoundButton("Jogar", Color.BLACK);
+        btnJogar = new RoundButton(I18n.get("menu.play"), Color.BLACK);
         btnJogar.setAlignmentX(CENTER_ALIGNMENT);
         btnJogar.setFont(new Font("Arial", Font.BOLD, 35));
         btnJogar.setMaximumSize(new Dimension(400, 120));
@@ -76,7 +100,7 @@ public class MenuFrame extends JFrame implements ServerListener {
             setVisible(false);
         });
 
-        JButton btnHistorico = new RoundButton("Ver Histórico", Color.BLACK);
+        btnHistorico = new RoundButton(I18n.get("menu.history"), Color.BLACK);
         btnHistorico.setAlignmentX(CENTER_ALIGNMENT);
         btnHistorico.setFont(new Font("Arial", Font.BOLD, 35));
         btnHistorico.setMaximumSize(new Dimension(400, 120));
@@ -105,7 +129,7 @@ public class MenuFrame extends JFrame implements ServerListener {
         rightButtons.setOpaque(false);
 
         btnExcluirConta = new RoundButton(
-            "Excluir Conta",
+            I18n.get("menu.delete"),
             Color.WHITE,
             new Color(180, 40, 40, 230),
             new Color(210, 60, 60, 240)
@@ -114,7 +138,7 @@ public class MenuFrame extends JFrame implements ServerListener {
         btnExcluirConta.addActionListener(e -> attemptAccountDeletion());
         leftButtons.add(btnExcluirConta);
 
-        JButton btnDeslogar = new RoundButton("Deslogar", Color.BLACK);
+        btnDeslogar = new RoundButton(I18n.get("menu.logout"), Color.BLACK);
         btnDeslogar.setPreferredSize(new Dimension(250, 60));
         btnDeslogar.addActionListener(e -> {
             connection.logout();
@@ -125,7 +149,7 @@ public class MenuFrame extends JFrame implements ServerListener {
             dispose();
         });
 
-        JButton btnSair = new RoundButton("Sair", Color.BLACK);
+        btnSair = new RoundButton(I18n.get("menu.exit"), Color.BLACK);
         btnSair.setPreferredSize(new Dimension(250, 60));
         btnSair.addActionListener(e -> {
             connection.logout();
@@ -140,6 +164,7 @@ public class MenuFrame extends JFrame implements ServerListener {
         backgroundPanel.add(southPanel, BorderLayout.SOUTH);
 
         setContentPane(backgroundPanel);
+        applyTranslations(username);
     }
 
     public void open(JFrame frame) {
@@ -156,8 +181,8 @@ public class MenuFrame extends JFrame implements ServerListener {
         }
         int option = CustomDialog.showConfirm(
             this,
-            "Tem certeza que deseja excluir sua conta? Esta ação é irreversível.",
-            "Confirmar exclusão"
+            I18n.get("menu.confirm.delete.msg"),
+            I18n.get("menu.confirm.delete.title")
         );
         if (option == JOptionPane.YES_OPTION) {
             awaitingAccountDeletion = true;
@@ -173,7 +198,7 @@ public class MenuFrame extends JFrame implements ServerListener {
 
     @Override
     public void onErrorMessage(String message) {
-        JOptionPane.showMessageDialog(this, message, "Erro", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, I18n.get("dialog.error"), JOptionPane.ERROR_MESSAGE);
         if (awaitingAccountDeletion) {
             awaitingAccountDeletion = false;
             btnExcluirConta.setEnabled(true);
@@ -185,7 +210,7 @@ public class MenuFrame extends JFrame implements ServerListener {
         awaitingAccountDeletion = false;
         accountDeleted = true;
         btnExcluirConta.setEnabled(true);
-        CustomDialog.showMessage(this, "Conta excluída com sucesso.", "Conta removida", JOptionPane.INFORMATION_MESSAGE);
+        CustomDialog.showMessage(this, I18n.get("menu.delete.ok"), I18n.get("dialog.success"), JOptionPane.INFORMATION_MESSAGE);
         setVisible(false);
         gameFrame.dispose();
         historicoFrame.dispose();
@@ -198,7 +223,7 @@ public class MenuFrame extends JFrame implements ServerListener {
         if (accountDeleted) {
             return;
         }
-        JOptionPane.showMessageDialog(this, "Conexão perdida.", "Erro", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, I18n.get("connection.lost"), I18n.get("dialog.error"), JOptionPane.ERROR_MESSAGE);
         System.exit(0);
     }
 
@@ -206,5 +231,20 @@ public class MenuFrame extends JFrame implements ServerListener {
     public void dispose() {
         connection.removeListener(this);
         super.dispose();
+    }
+
+    private void applyTranslations(String username) {
+        setTitle(I18n.get("menu.title"));
+        JPanel centerPanel = (JPanel) ((BorderLayout) getContentPane().getLayout()).getLayoutComponent(BorderLayout.CENTER);
+        JPanel messageWrapper = (JPanel) centerPanel.getComponent(1);
+        JPanel messageBox = (JPanel) messageWrapper.getComponent(0);
+        lblPerfil.setText(I18n.get("menu.message", username));
+
+        btnJogar.setText(I18n.get("menu.play"));
+        btnHistorico.setText(I18n.get("menu.history"));
+
+        btnExcluirConta.setText(I18n.get("menu.delete"));
+        btnDeslogar.setText(I18n.get("menu.logout"));
+        btnSair.setText(I18n.get("menu.exit"));
     }
 }

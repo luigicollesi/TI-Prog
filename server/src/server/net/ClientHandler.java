@@ -13,8 +13,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.nio.charset.StandardCharsets;
 
 public class ClientHandler implements Runnable {
+    private static final int MAX_PASSWORD_BYTES = 256;
+
     private final Socket socket;
     private final BlackjackServer server;
     private final TableManager tableManager;
@@ -69,19 +72,25 @@ public class ClientHandler implements Runnable {
                     handleJoinTable();
                     break;
                 case "BET":
-                    handleBet(parts);
-                    break;
-                case "ACTION":
-                    handleAction(parts);
-                    break;
-                case "HISTORY":
-                    handleHistory();
-                    break;
-                case "LOGOUT":
-                    handleLogout();
-                    break;
-                case "DELETE_ACCOUNT":
-                    handleDeleteAccount();
+                handleBet(parts);
+                break;
+            case "ACTION":
+                handleAction(parts);
+                break;
+            case "LEAVE_TABLE":
+                handleLeaveTable();
+                break;
+            case "HISTORY":
+                handleHistory();
+                break;
+            case "CHAT":
+                handleChat(parts);
+                break;
+            case "LOGOUT":
+                handleLogout();
+                break;
+            case "DELETE_ACCOUNT":
+                handleDeleteAccount();
                     break;
                 default:
                     sendMessage("ERROR;Comando desconhecido.");
@@ -103,6 +112,11 @@ public class ClientHandler implements Runnable {
 
         String username = parts[1];
         String password = parts[2];
+
+        if (password.getBytes(StandardCharsets.UTF_8).length > MAX_PASSWORD_BYTES) {
+            sendMessage("LOGIN_FAIL;Senha excede o limite de 256 bytes.");
+            return;
+        }
 
         UserData data = DatabaseOperations.authenticate(username, password);
         if (data == null) {
@@ -132,8 +146,9 @@ public class ClientHandler implements Runnable {
             sendMessage("REGISTER_FAIL;Nome inválido.");
             return;
         }
-        if (password.length() < 4 || password.length() > 50) {
-            sendMessage("REGISTER_FAIL;Senha inválida.");
+        int passwordBytes = password.getBytes(StandardCharsets.UTF_8).length;
+        if (password.length() < 4 || passwordBytes > MAX_PASSWORD_BYTES) {
+            sendMessage("REGISTER_FAIL;Senha deve ter de 4 a 256 bytes.");
             return;
         }
 
@@ -268,6 +283,30 @@ public class ClientHandler implements Runnable {
         } catch (SQLException e) {
             sendMessage("ACCOUNT_DELETE_FAIL;" + e.getMessage());
         }
+    }
+
+    private void handleLeaveTable() {
+        if (table != null) {
+            tableManager.removePlayer(table, this);
+            table = null;
+            sendMessage("LEFT_TABLE");
+        }
+    }
+
+    private void handleChat(String[] parts) {
+        if (!isAuthenticated()) {
+            sendMessage("ERROR;Autenticação necessária.");
+            return;
+        }
+        if (table == null) {
+            sendMessage("ERROR;Entre em uma mesa para usar o chat.");
+            return;
+        }
+        if (parts.length < 2 || parts[1].isBlank()) {
+            return;
+        }
+        String text = parts[1];
+        table.broadcastChat(this, text);
     }
 
     private boolean isAuthenticated() {

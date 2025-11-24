@@ -464,4 +464,14 @@ public class Table {
     public synchronized boolean isEmpty() {
         return players.isEmpty();
     }
+
+    public synchronized void broadcastChat(ClientHandler sender, String text) {
+        String safeText = text == null ? "" : text.trim();
+        if (safeText.isEmpty()) {
+            return;
+        }
+        safeText = safeText.replace(";", ",").replaceAll("\\r?\\n", " ");
+        String payload = "CHAT_MSG;" + sender.getUsername() + ";" + safeText;
+        broadcastMessage(payload);
+    }
 }

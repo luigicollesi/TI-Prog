@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.security.GeneralSecurityException;
+
+import server.security.PasswordCrypto;
 
 public final class DatabaseOperations {
 
@@ -33,16 +36,22 @@ public final class DatabaseOperations {
     }
 
     public static UserData authenticate(String username, String password) throws SQLException {
-        String sql = "SELECT id, user_name, Money AS balance FROM usuarios WHERE user_name = ? AND senha = ?";
-        try (PreparedStatement ps = prepare(sql, new String[]{username, password});
+        String sql = "SELECT id, user_name, Money AS balance, senha FROM usuarios WHERE user_name = ?";
+        try (PreparedStatement ps = prepare(sql, new String[]{username});
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
-                return new UserData(
-                    rs.getString("id"),
-                    rs.getString("user_name"),
-                    rs.getInt("balance")
-                );
+                String encryptedInput = PasswordCrypto.encryptPassword(password);
+                String storedPassword = rs.getString("senha");
+                if (storedPassword != null && storedPassword.equals(encryptedInput)) {
+                    return new UserData(
+                        rs.getString("id"),
+                        rs.getString("user_name"),
+                        rs.getInt("balance")
+                    );
+                }
             }
+        } catch (GeneralSecurityException e) {
+            throw new SQLException("Erro ao criptografar senha.", e);
         }
         return null;
     }
@@ -56,11 +65,16 @@ public final class DatabaseOperations {
     }
 
     public static boolean createUser(String username, String password) throws SQLException {
-        executeUpdate(
-            "INSERT INTO usuarios (user_name, senha) VALUES (?, ?)",
-            new String[]{username, password}
-        );
-        return true;
+        try {
+            String encryptedPassword = PasswordCrypto.encryptPassword(password);
+            executeUpdate(
+                "INSERT INTO usuarios (user_name, senha) VALUES (?, ?)",
+                new String[]{username, encryptedPassword}
+            );
+            return true;
+        } catch (GeneralSecurityException e) {
+            throw new SQLException("Erro ao criptografar senha.", e);
+        }
     }
 
     public static void updateBalance(String userId, int newBalance) throws SQLException {

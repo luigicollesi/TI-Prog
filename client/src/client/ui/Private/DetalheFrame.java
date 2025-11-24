@@ -1,5 +1,6 @@
 package client.ui.Private;
 
+import client.i18n.I18n;
 import client.ui.utility.PanelImage;
 import client.ui.utility.RoundButton;
 
@@ -26,7 +27,7 @@ public class DetalheFrame extends JDialog {
     private final ImageIcon backgroundImage = new ImageIcon("public/Images/GameFundo2.png");
 
     public DetalheFrame(HistoricoFrame parent) {
-        super(parent, "Detalhes da Partida", true);
+        super(parent, I18n.get("detail.title"), true);
         setSize(800, 570);
         setLocationRelativeTo(parent);
 
@@ -79,7 +80,7 @@ public class DetalheFrame extends JDialog {
         southPanel.setOpaque(false);
         southPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        btnFechar = new RoundButton("Fechar", Color.BLACK);
+        btnFechar = new RoundButton(I18n.get("detail.close"), Color.BLACK);
         btnFechar.setPreferredSize(new java.awt.Dimension(250, 60));
         btnFechar.addActionListener(e -> setVisible(false));
         southPanel.add(btnFechar);
@@ -88,14 +89,16 @@ public class DetalheFrame extends JDialog {
     }
 
     public void mostrar(String cartasPlayerJSON, String cartasDealerJSON) {
+        setTitle(I18n.get("detail.title"));
+        btnFechar.setText(I18n.get("detail.close"));
         List<String[]> cartasPlayer = parseCartasJson(cartasPlayerJSON);
         List<String[]> cartasDealer = parseCartasJson(cartasDealerJSON);
 
         int somaPlayer = somar(cartasPlayer);
         int somaDealer = somar(cartasDealer);
 
-        lblSomaBot.setText("Dealer: " + somaDealer);
-        lblSomaPlayer.setText("Jogador: " + somaPlayer);
+        lblSomaBot.setText(I18n.get("detail.dealer", somaDealer));
+        lblSomaPlayer.setText(I18n.get("detail.player", somaPlayer));
 
         preencherPainel(painelBot, cartasDealer);
         preencherPainel(painelPlayer, cartasPlayer);
